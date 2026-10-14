@@ -32,6 +32,12 @@ else's model.
                     └────────────────────────────────────────────────┘
 ```
 
+**Scope** (judged against this project's goal: a small, understandable demo of how agents work):
+
+- **Core**: essential to understanding agents; candidates for the MVP
+- **Later**: teaches something real, but not needed for the basics; candidates for later iterations
+- **Skip**: product polish, packaging or infrastructure; matters in real products, teaches little about agents
+
 **Status:** ✅ built · ⬜ not yet
 
 ---
@@ -50,16 +56,16 @@ on long tasks, stop halfway, or never stop at all.
 **Key ideas:** the agent loop; stopping conditions; planning before acting;
 checking your own work.
 
-| Component | What it adds | Status |
-|---|---|---|
-| Agent loop | Call model → tool requested? → run it → feed result back → repeat | ✅ |
-| Step limit | A cap on iterations so a confused model can't loop forever | ✅ |
-| To-do list | The model writes a checklist and ticks items off as it goes | ⬜ |
-| Plan mode | Explore read-only first, propose a plan, edit only after approval | ⬜ |
-| Verify loop | Run tests or lint after a change and fix what fails | ⬜ |
-| Goal check | A separate check decides whether the task is truly done | ⬜ |
-| Loop detection | Notice the agent repeating itself and stop it | ⬜ |
-| Retries | Recover from failed model calls without losing progress | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Agent loop | Call model → tool requested? → run it → feed result back → repeat | Core | ✅ |
+| Step limit | A cap on iterations so a confused model can't loop forever | Core | ✅ |
+| To-do list | The model writes a checklist and ticks items off as it goes | Core | ⬜ |
+| Plan mode | Explore read-only first, propose a plan, edit only after approval | Later | ⬜ |
+| Verify loop | Run tests or lint after a change and fix what fails | Core | ⬜ |
+| Goal check | A separate check decides whether the task is truly done | Later | ⬜ |
+| Loop detection | Notice the agent repeating itself and stop it | Later | ⬜ |
+| Retries | Recover from failed model calls without losing progress | Skip | ⬜ |
 
 ## 2. Action (tools)
 
@@ -73,22 +79,22 @@ design is interface design for a reader that can't ask questions.
 tools to the model; text-protocol vs native tool calling; returning errors as
 information; keeping outputs a manageable size.
 
-| Component | What it adds | Status |
-|---|---|---|
-| Read file | See a file's contents | ✅ |
-| List and find files | Explore a project's structure | ⬜ |
-| Write and edit files | Create files; replace an exact snippet, failing clearly if it isn't found | ⬜ |
-| Search contents | Find code by pattern across a project | ⬜ |
-| Run shell commands | Run tests, scripts and git; read the output | ⬜ |
-| Web fetch and search | Read docs and look up errors | ⬜ |
-| Ask the user | Ask a clarifying question mid-task instead of guessing | ⬜ |
-| Tool registry | Describe tools automatically from their code; add a tool without touching the loop | ⬜ |
-| Native tool calling | The API returns structured tool requests instead of us parsing text | ⬜ |
-| Parallel tool calls | Run several requested tools from one reply | ⬜ |
-| Large output handling | Truncate huge results and keep the full version somewhere retrievable | ⬜ |
-| Edit formats | Compare whole-file rewrites, search-and-replace and diffs as ways to edit | ⬜ |
-| Code intelligence | Report type errors after edits; jump to definitions | ⬜ |
-| Bash-only agent | The minimalist alternative: one shell tool instead of many | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Read file | See a file's contents | Core | ✅ |
+| List and find files | Explore a project's structure | Core | ⬜ |
+| Write and edit files | Create files; replace an exact snippet, failing clearly if it isn't found | Core | ⬜ |
+| Search contents | Find code by pattern across a project | Later | ⬜ |
+| Run shell commands | Run tests, scripts and git; read the output | Core | ⬜ |
+| Web fetch and search | Read docs and look up errors | Later | ⬜ |
+| Ask the user | Ask a clarifying question mid-task instead of guessing | Later | ⬜ |
+| Tool registry | Describe tools automatically from their code; add a tool without touching the loop | Core | ⬜ |
+| Native tool calling | The API returns structured tool requests instead of us parsing text | Core | ⬜ |
+| Parallel tool calls | Run several requested tools from one reply | Later | ⬜ |
+| Large output handling | Truncate huge results and keep the full version somewhere retrievable | Later | ⬜ |
+| Edit formats | Compare whole-file rewrites, search-and-replace and diffs as ways to edit | Later | ⬜ |
+| Code intelligence | Report type errors after edits; jump to definitions | Skip | ⬜ |
+| Bash-only agent | The minimalist alternative: one shell tool instead of many | Later | ⬜ |
 
 ## 3. Context
 
@@ -101,17 +107,17 @@ distracted. Deciding what goes in is called **context engineering**.
 **Key ideas:** the context window as working memory; system prompts;
 always-on vs on-demand information; summarizing to make room.
 
-| Component | What it adds | Status |
-|---|---|---|
-| System prompt | Instructions that shape how the agent works | ✅ |
-| Environment info | The working directory, OS, date and git status, so the agent knows where it is | ⬜ |
-| Project instructions file | An `AGENTS.md`-style file with project conventions, loaded at startup | ⬜ |
-| Repo map | A compact outline of a codebase's key classes and functions | ⬜ |
-| Pinning files | Let the user add specific files to the conversation | ⬜ |
-| Context meter | Show how full the context window is, and with what | ⬜ |
-| Compaction | When space runs low, drop old tool outputs, then summarize history | ⬜ |
-| Skills | Task-specific instructions loaded only when relevant | ⬜ |
-| Prompt caching | Reuse the unchanged start of the prompt to save cost and time | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| System prompt | Instructions that shape how the agent works | Core | ✅ |
+| Environment info | The working directory, OS, date and git status, so the agent knows where it is | Core | ⬜ |
+| Project instructions file | An `AGENTS.md`-style file with project conventions, loaded at startup | Core | ⬜ |
+| Repo map | A compact outline of a codebase's key classes and functions | Later | ⬜ |
+| Pinning files | Let the user add specific files to the conversation | Skip | ⬜ |
+| Context meter | Show how full the context window is, and with what | Later | ⬜ |
+| Compaction | When space runs low, drop old tool outputs, then summarize history | Core | ⬜ |
+| Skills | Task-specific instructions loaded only when relevant | Later | ⬜ |
+| Prompt caching | Reuse the unchanged start of the prompt to save cost and time | Skip | ⬜ |
 
 ## 4. Memory
 
@@ -125,14 +131,14 @@ be stored by the harness.
 *selected* from it for one call. Memory ranges from the current conversation
 up to facts kept across sessions.
 
-| Component | What it adds | Status |
-|---|---|---|
-| Conversation history | Resend everything said so far, so follow-ups work | ✅ |
-| Saved sessions | Write each conversation to disk | ⬜ |
-| Resume and fork | Continue an old session, or branch off from it | ⬜ |
-| Long-term notes | The agent saves facts worth remembering and loads them next time | ⬜ |
-| Memory upkeep | Decide what's worth keeping; merge and prune over time | ⬜ |
-| Retrieval | Search past sessions and pull back only the relevant parts | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Conversation history | Resend everything said so far, so follow-ups work | Core | ✅ |
+| Saved sessions | Write each conversation to disk | Later | ⬜ |
+| Resume and fork | Continue an old session, or branch off from it | Skip | ⬜ |
+| Long-term notes | The agent saves facts worth remembering and loads them next time | Core | ⬜ |
+| Memory upkeep | Decide what's worth keeping; merge and prune over time | Later | ⬜ |
+| Retrieval | Search past sessions and pull back only the relevant parts | Later | ⬜ |
 
 ## 5. Safety and control
 
@@ -145,18 +151,18 @@ delete them. Safety is what makes it reasonable to let it act on its own.
 where actions run; making changes reversible; treating content the agent
 reads as data, never as instructions.
 
-| Component | What it adds | Status |
-|---|---|---|
-| Approval prompt | Ask "allow this?" before risky actions | ⬜ |
-| Permission rules | Allow / ask / deny rules per tool and pattern | ⬜ |
-| Permission modes | Switch between ask-everything, accept-edits, read-only and auto | ⬜ |
-| Automatic risk check | A model judges each action and blocks only risky ones | ⬜ |
-| Folder boundary | File tools can't reach outside the project | ⬜ |
-| Sandbox | Run commands where they can't touch the real machine (restricted shell, container, cloud) | ⬜ |
-| Checkpoints | Snapshot files before each edit so they can be rolled back | ⬜ |
-| Git safety net | Commit each change automatically; undo with one command | ⬜ |
-| Isolated workspaces | Each task works on its own copy of the repo | ⬜ |
-| Prompt-injection defense | Don't obey instructions hidden in files or web pages | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Approval prompt | Ask "allow this?" before risky actions | Core | ⬜ |
+| Permission rules | Allow / ask / deny rules per tool and pattern | Later | ⬜ |
+| Permission modes | Switch between ask-everything, accept-edits, read-only and auto | Skip | ⬜ |
+| Automatic risk check | A model judges each action and blocks only risky ones | Later | ⬜ |
+| Folder boundary | File tools can't reach outside the project | Core | ⬜ |
+| Sandbox | Run commands where they can't touch the real machine (restricted shell, container, cloud) | Later | ⬜ |
+| Checkpoints | Snapshot files before each edit so they can be rolled back | Later | ⬜ |
+| Git safety net | Commit each change automatically; undo with one command | Skip | ⬜ |
+| Isolated workspaces | Each task works on its own copy of the repo | Skip | ⬜ |
+| Prompt-injection defense | Don't obey instructions hidden in files or web pages | Later | ⬜ |
 
 ## 6. Orchestration
 
@@ -169,15 +175,15 @@ parallel gets more done; cheaper models can handle easier work.
 **Key ideas:** subagents are mostly a context-management tool; delegation
 vs collaboration; matching model size to task difficulty.
 
-| Component | What it adds | Status |
-|---|---|---|
-| Subagents | Hand off a sub-task to a fresh agent; keep only its summary | ⬜ |
-| Specialized agents | Explore, plan, build and review agents with different tools and prompts | ⬜ |
-| Parallel agents | Several subagents working at once | ⬜ |
-| Background work | Long tasks run in the background and report back | ⬜ |
-| Agent teams | Agents sharing a task list and messaging each other | ⬜ |
-| Scripted workflows | Code that coordinates many agents in a fixed pattern | ⬜ |
-| Model routing | A cheap model for easy work, a strong one for hard decisions | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Subagents | Hand off a sub-task to a fresh agent; keep only its summary | Core | ⬜ |
+| Specialized agents | Explore, plan, build and review agents with different tools and prompts | Later | ⬜ |
+| Parallel agents | Several subagents working at once | Later | ⬜ |
+| Background work | Long tasks run in the background and report back | Skip | ⬜ |
+| Agent teams | Agents sharing a task list and messaging each other | Skip | ⬜ |
+| Scripted workflows | Code that coordinates many agents in a fixed pattern | Skip | ⬜ |
+| Model routing | A cheap model for easy work, a strong one for hard decisions | Later | ⬜ |
 
 ## 7. Evaluation and observability
 
@@ -190,15 +196,15 @@ project, and the part most tutorials skip.
 **Key ideas:** logging every step; test sets of tasks; comparing versions;
 tracking tokens and dollars.
 
-| Component | What it adds | Status |
-|---|---|---|
-| Run log | Record every model call and tool result | ⬜ |
-| Token and cost tracking | Tokens and dollars per call and per session | ⬜ |
-| Run viewer | Browse a past run step by step | ⬜ |
-| Fake model for tests | Test the harness deterministically and for free | ⬜ |
-| Task benchmark | A fixed set of tasks to score each version of the agent | ⬜ |
-| Record and replay | Re-run a failed run with a different prompt or model | ⬜ |
-| Capstone task | One real job the finished agent completes end to end | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Run log | Record every model call and tool result | Core | ⬜ |
+| Token and cost tracking | Tokens and dollars per call and per session | Core | ⬜ |
+| Run viewer | Browse a past run step by step | Skip | ⬜ |
+| Fake model for tests | Test the harness deterministically and for free | Later | ⬜ |
+| Task benchmark | A fixed set of tasks to score each version of the agent | Core | ⬜ |
+| Record and replay | Re-run a failed run with a different prompt or model | Skip | ⬜ |
+| Capstone task | One real job the finished agent completes end to end | Later | ⬜ |
 
 ## 8. Interfaces and integration
 
@@ -211,20 +217,20 @@ abilities without changing the core.
 **Key ideas:** human-in-the-loop vs fully automatic use; extension points
 (hooks, plugins, MCP).
 
-| Component | What it adds | Status |
-|---|---|---|
-| Terminal chat | Type, read the reply, repeat | ⬜ |
-| Streaming | Show replies as they're written | ⬜ |
-| Interrupt and steer | Stop or redirect the agent mid-task | ⬜ |
-| Diff preview | Show a change before it's applied | ⬜ |
-| Slash commands | `/help`, `/clear`, `/model` and user-defined shortcuts | ⬜ |
-| Status line | Model, context use and cost always visible | ⬜ |
-| Headless mode | One-shot runs from scripts, with structured output | ⬜ |
-| Library and HTTP API | Use the agent from other code or over the network | ⬜ |
-| Hooks | Run your own code before or after the agent's actions | ⬜ |
-| MCP | Connect external tool servers through the Model Context Protocol | ⬜ |
-| Plugins | Bundle tools, skills, hooks and commands to share | ⬜ |
-| Integrations | GitHub (issue to pull request, code review), chat apps, scheduled runs | ⬜ |
+| Component | What it adds | Scope | Status |
+|---|---|---|---|
+| Terminal chat | Type, read the reply, repeat | Later | ⬜ |
+| Streaming | Show replies as they're written | Later | ⬜ |
+| Interrupt and steer | Stop or redirect the agent mid-task | Skip | ⬜ |
+| Diff preview | Show a change before it's applied | Later | ⬜ |
+| Slash commands | `/help`, `/clear`, `/model` and user-defined shortcuts | Skip | ⬜ |
+| Status line | Model, context use and cost always visible | Skip | ⬜ |
+| Headless mode | One-shot runs from scripts, with structured output | Skip | ⬜ |
+| Library and HTTP API | Use the agent from other code or over the network | Skip | ⬜ |
+| Hooks | Run your own code before or after the agent's actions | Later | ⬜ |
+| MCP | Connect external tool servers through the Model Context Protocol | Later | ⬜ |
+| Plugins | Bundle tools, skills, hooks and commands to share | Skip | ⬜ |
+| Integrations | GitHub (issue to pull request, code review), chat apps, scheduled runs | Skip | ⬜ |
 
 ---
 
@@ -248,13 +254,13 @@ This part is about **experiments, not building**: we use models; labs make them.
 | Reasoning training | Thinking step by step before answering ("reasoning" or "thinking" models) |
 | Tool-use and agentic training | Calling tools reliably and working through long tasks |
 
-| Experiment | What it shows | Status |
-|---|---|---|
-| Same harness, different models | How much of an agent's quality comes from the model vs the harness | ⬜ |
-| Small vs large model | Where small models break: format errors, lost track of the task, bad tool calls | ⬜ |
-| Reasoning on vs off | What thinking buys on hard tasks, and what it costs | ⬜ |
-| Text protocol vs native tool calling | How much tool-use training matters | ⬜ |
-| Fine-tuning a small model *(stretch)* | Teaching a small model our tool format | ⬜ |
+| Experiment | What it shows | Scope | Status |
+|---|---|---|---|
+| Same harness, different models | How much of an agent's quality comes from the model vs the harness | Core | ⬜ |
+| Small vs large model | Where small models break: format errors, lost track of the task, bad tool calls | Later | ⬜ |
+| Reasoning on vs off | What thinking buys on hard tasks, and what it costs | Later | ⬜ |
+| Text protocol vs native tool calling | How much tool-use training matters | Core | ⬜ |
+| Fine-tuning a small model *(stretch)* | Teaching a small model our tool format | Skip | ⬜ |
 
 ---
 

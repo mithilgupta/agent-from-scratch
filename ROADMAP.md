@@ -49,57 +49,64 @@ decide it: **dependencies first** (for example, ask permission before giving
 the agent a shell), and **get to a working coding agent early, then measure
 it before making big changes**, so each later change can be judged by results.
 
-Already built in step 01: agent loop, step limit, read file, system prompt,
-conversation history.
+### Phase 0: Foundation (step 01)
+
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| — | Agent loop | Control loop | The core of every agent | ✅ |
+| — | Step limit | Control loop | Stops a confused model from looping forever | ✅ |
+| — | Read file | Tools | The first, simplest tool | ✅ |
+| — | System prompt | Context | How the model learns the tool exists | ✅ |
+| — | Conversation history | Memory | Makes follow-up questions work | ✅ |
 
 ### Phase 1: MVP, a coding agent that can fix a bug safely
 
-| # | Component | Topic | Why here |
-|---|---|---|---|
-| 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite |
-| 2 | List and find files | Tools | The agent has to explore a project before it can change it |
-| 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write |
-| 4 | Write and edit files | Tools | The moment the agent can actually change code |
-| 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access |
-| 6 | Run shell commands | Tools | Lets the agent run code, tests and git |
-| 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent |
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite | ⬜ |
+| 2 | List and find files | Tools | The agent has to explore a project before it can change it | ⬜ |
+| 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ⬜ |
+| 4 | Write and edit files | Tools | The moment the agent can actually change code | ⬜ |
+| 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ⬜ |
+| 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ⬜ |
+| 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent | ⬜ |
 
 **MVP done when:** given a small project with a failing test, the agent finds
 the bug, fixes it, runs the tests to confirm, and asks before anything risky.
 
 ### Phase 2: See and measure it
 
-| # | Component | Topic | Why here |
-|---|---|---|---|
-| 8 | Run log | Evaluation | Record every call and tool result so runs can be inspected |
-| 9 | Token and cost tracking | Evaluation | Know what each run costs before making it bigger |
-| 10 | Task benchmark | Evaluation | A small fixed set of tasks to score every later change against |
-| 11 | Same harness, different models | Model | First use of the benchmark: how much does the model matter? |
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| 8 | Run log | Evaluation | Record every call and tool result so runs can be inspected | ⬜ |
+| 9 | Token and cost tracking | Evaluation | Know what each run costs before making it bigger | ⬜ |
+| 10 | Task benchmark | Evaluation | A small fixed set of tasks to score every later change against | ⬜ |
+| 11 | Same harness, different models | Model | First use of the benchmark: how much does the model matter? | ⬜ |
 
 ### Phase 3: Make it robust and well-informed
 
-| # | Component | Topic | Why here |
-|---|---|---|---|
-| 12 | Native tool calling | Tools | Replace text parsing with structured tool calls |
-| 13 | Text protocol vs native tool calling | Model | Measure what step 12 bought, on the benchmark |
-| 14 | Environment info | Context | Tell the agent where it is: folder, OS, date, git status |
-| 15 | Project instructions file | Context | Project conventions loaded at startup |
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| 12 | Native tool calling | Tools | Replace text parsing with structured tool calls | ⬜ |
+| 13 | Text protocol vs native tool calling | Model | Measure what step 12 bought, on the benchmark | ⬜ |
+| 14 | Environment info | Context | Tell the agent where it is: folder, OS, date, git status | ⬜ |
+| 15 | Project instructions file | Context | Project conventions loaded at startup | ⬜ |
 
 ### Phase 4: Handle longer tasks
 
-| # | Component | Topic | Why here |
-|---|---|---|---|
-| 16 | To-do list | Control loop | Keep multi-step tasks on track |
-| 17 | Plan mode | Control loop | Explore and plan before editing; builds on the approval prompt and the to-do list |
-| 18 | Compaction | Context | Long tasks fill the context window; summarize to make room |
-| 19 | Long-term notes | Memory | Remember things across sessions |
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| 16 | To-do list | Control loop | Keep multi-step tasks on track | ⬜ |
+| 17 | Plan mode | Control loop | Explore and plan before editing; builds on the approval prompt and the to-do list | ⬜ |
+| 18 | Compaction | Context | Long tasks fill the context window; summarize to make room | ⬜ |
+| 19 | Long-term notes | Memory | Remember things across sessions | ⬜ |
 
 ### Phase 5: Multiple agents
 
-| # | Component | Topic | Why here |
-|---|---|---|---|
-| 20 | Subagents | Orchestration | Delegate a side task to a fresh agent; keep only its summary |
-| 21 | Specialized agents | Orchestration | Explore, plan and review agents with their own tools and prompts; builds on subagents |
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| 20 | Subagents | Orchestration | Delegate a side task to a fresh agent; keep only its summary | ⬜ |
+| 21 | Specialized agents | Orchestration | Explore, plan and review agents with their own tools and prompts; builds on subagents | ⬜ |
 
 ---
 

@@ -32,16 +32,6 @@ else's model.
                     └────────────────────────────────────────────────┘
 ```
 
-## How each step works
-
-Every step in this repo follows the same pattern:
-
-1. **Break it.** Show a task the current agent can't handle.
-2. **Fix it.** Add one component that solves that problem, and nothing else.
-3. **Explain it.** What the component is, which topic below it belongs to, and how production agents handle the same problem.
-
-Each step lives in its own folder and runs on its own.
-
 **Status:** ✅ built · ⬜ not yet
 
 ---

@@ -36,9 +36,10 @@ The repo is organized by the build order's phases, one folder each:
 | 0 | [`phase-0-foundation/`](phase-0-foundation/) | The minimal agent: one tool, one loop |
 | 1 | [`phase-1-mvp/`](phase-1-mvp/) | A coding agent that can fix a bug safely |
 | 2 | [`phase-2-measure/`](phase-2-measure/) | Record what it does, what it costs, how well it scores |
-| 3 | [`phase-3-robust/`](phase-3-robust/) | Structured tool calls and better context |
+| 3 | [`phase-3-robust/`](phase-3-robust/) | Structured tool calls, MCP and better context |
 | 4 | [`phase-4-longer-tasks/`](phase-4-longer-tasks/) | Planning, compaction and long-term memory |
 | 5 | [`phase-5-multi-agent/`](phase-5-multi-agent/) | Subagents and specialized agents |
+| 6 | [`phase-6-integrations/`](phase-6-integrations/) | Plugins and integrations (GitHub, chat apps, schedules) |
 
 ## Setup
 

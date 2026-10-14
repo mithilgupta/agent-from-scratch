@@ -97,8 +97,9 @@ Folder: [`phase-3-robust/`](phase-3-robust/)
 |---|---|---|---|---|
 | 12 | Native tool calling | Tools | Replace text parsing with structured tool calls | ⬜ |
 | 13 | Text protocol vs native tool calling | Model | Measure what step 12 bought, on the benchmark | ⬜ |
-| 14 | Environment info | Context | Tell the agent where it is: folder, OS, date, git status | ⬜ |
-| 15 | Project instructions file | Context | Project conventions loaded at startup | ⬜ |
+| 14 | MCP | Interfaces | Connect external tool servers; their tools arrive as schemas, the same format native tool calling uses | ⬜ |
+| 15 | Environment info | Context | Tell the agent where it is: folder, OS, date, git status | ⬜ |
+| 16 | Project instructions file | Context | Project conventions loaded at startup | ⬜ |
 
 ### Phase 4: Handle longer tasks
 
@@ -106,10 +107,10 @@ Folder: [`phase-4-longer-tasks/`](phase-4-longer-tasks/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
-| 16 | To-do list | Control loop | Keep multi-step tasks on track | ⬜ |
-| 17 | Plan mode | Control loop | Explore and plan before editing; builds on the approval prompt and the to-do list | ⬜ |
-| 18 | Compaction | Context | Long tasks fill the context window; summarize to make room | ⬜ |
-| 19 | Long-term notes | Memory | Remember things across sessions | ⬜ |
+| 17 | To-do list | Control loop | Keep multi-step tasks on track | ⬜ |
+| 18 | Plan mode | Control loop | Explore and plan before editing; builds on the approval prompt and the to-do list | ⬜ |
+| 19 | Compaction | Context | Long tasks fill the context window; summarize to make room | ⬜ |
+| 20 | Long-term notes | Memory | Remember things across sessions | ⬜ |
 
 ### Phase 5: Multiple agents
 
@@ -117,8 +118,17 @@ Folder: [`phase-5-multi-agent/`](phase-5-multi-agent/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
-| 20 | Subagents | Orchestration | Delegate a side task to a fresh agent; keep only its summary | ⬜ |
-| 21 | Specialized agents | Orchestration | Explore, plan and review agents with their own tools and prompts; builds on subagents | ⬜ |
+| 21 | Subagents | Orchestration | Delegate a side task to a fresh agent; keep only its summary | ⬜ |
+| 22 | Specialized agents | Orchestration | Explore, plan and review agents with their own tools and prompts; builds on subagents | ⬜ |
+
+### Phase 6: Connect it to the world
+
+Folder: [`phase-6-integrations/`](phase-6-integrations/)
+
+| # | Component | Topic | Why here | Status |
+|---|---|---|---|---|
+| 23 | Plugins | Interfaces | Package the agent's tools and instructions so others can install them; needs a finished set of pieces to bundle | ⬜ |
+| 24 | Integrations | Interfaces | Run the agent from GitHub, chat apps or a schedule (for example, turn an issue into a pull request); comes last because it puts the whole agent to work | ⬜ |
 
 ---
 
@@ -308,9 +318,9 @@ abilities without changing the core.
 | Headless mode | One-shot runs from scripts, with structured output | Skip | ⬜ |
 | Library and HTTP API | Use the agent from other code or over the network | Skip | ⬜ |
 | Hooks | Run your own code before or after the agent's actions | Later | ⬜ |
-| MCP | Connect external tool servers through the Model Context Protocol | Later | ⬜ |
-| Plugins | Bundle tools, skills, hooks and commands to share | Skip | ⬜ |
-| Integrations | GitHub (issue to pull request, code review), chat apps, scheduled runs | Skip | ⬜ |
+| MCP | Connect external tool servers through the Model Context Protocol | Core | ⬜ |
+| Plugins | Bundle tools, skills, hooks and commands to share | Core | ⬜ |
+| Integrations | GitHub (issue to pull request, code review), chat apps, scheduled runs | Core | ⬜ |
 
 ---
 

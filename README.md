@@ -23,21 +23,16 @@ You ──► conversation ──► LLM ──► reply
 
 ## Steps
 
-See [ROADMAP.md](ROADMAP.md) for the full plan. Each step is a self-contained
-folder with a notebook to run and a README that explains it.
+Each step is a self-contained folder with a notebook to run and a README that
+explains it.
 
 | # | Step | Status |
 |---|---|---|
 | 01 | [Minimal agent](01-minimal-agent/): one tool, the agent loop | ✅ |
-| 02 | More tools | ⬜ |
-| 03 | Tool registry | ⬜ |
-| 04 | Permissions | ⬜ |
-| 05 | Context management | ⬜ |
-| 06 | Native tool calling | ⬜ |
-| 07 | Long-term memory | ⬜ |
-| 08 | Planning | ⬜ |
-| 09 | Subagents | ⬜ |
-| 10 | Observability | ⬜ |
+
+What comes next is in [ROADMAP.md](ROADMAP.md): a backlog of about 100
+components found in production coding agents (Claude Code, Codex CLI, Gemini
+CLI, Aider, OpenCode and others) and in other build-from-scratch projects.
 
 ## Setup
 

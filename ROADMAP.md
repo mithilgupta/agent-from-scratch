@@ -189,7 +189,28 @@ vs collaboration; matching model size to task difficulty.
 | Scripted workflows | Code that coordinates many agents in a fixed pattern | ⬜ |
 | Model routing | A cheap model for easy work, a strong one for hard decisions | ⬜ |
 
-## 7. Interfaces and integration
+## 7. Evaluation and observability
+
+**The question:** Does it work, what did it do, and what did it cost?
+
+**Why it matters:** Without measurement you can't tell whether a new
+component helped or hurt. This is the most data-science-like part of the
+project, and the part most tutorials skip.
+
+**Key ideas:** logging every step; test sets of tasks; comparing versions;
+tracking tokens and dollars.
+
+| Component | What it adds | Status |
+|---|---|---|
+| Run log | Record every model call and tool result | ⬜ |
+| Token and cost tracking | Tokens and dollars per call and per session | ⬜ |
+| Run viewer | Browse a past run step by step | ⬜ |
+| Fake model for tests | Test the harness deterministically and for free | ⬜ |
+| Task benchmark | A fixed set of tasks to score each version of the agent | ⬜ |
+| Record and replay | Re-run a failed run with a different prompt or model | ⬜ |
+| Capstone task | One real job the finished agent completes end to end | ⬜ |
+
+## 8. Interfaces and integration
 
 **The question:** How do people and other systems work with the agent?
 
@@ -214,27 +235,6 @@ abilities without changing the core.
 | MCP | Connect external tool servers through the Model Context Protocol | ⬜ |
 | Plugins | Bundle tools, skills, hooks and commands to share | ⬜ |
 | Integrations | GitHub (issue to pull request, code review), chat apps, scheduled runs | ⬜ |
-
-## 8. Evaluation and observability
-
-**The question:** Does it work, what did it do, and what did it cost?
-
-**Why it matters:** Without measurement you can't tell whether a new
-component helped or hurt. This is the most data-science-like part of the
-project, and the part most tutorials skip.
-
-**Key ideas:** logging every step; test sets of tasks; comparing versions;
-tracking tokens and dollars.
-
-| Component | What it adds | Status |
-|---|---|---|
-| Run log | Record every model call and tool result | ⬜ |
-| Token and cost tracking | Tokens and dollars per call and per session | ⬜ |
-| Run viewer | Browse a past run step by step | ⬜ |
-| Fake model for tests | Test the harness deterministically and for free | ⬜ |
-| Task benchmark | A fixed set of tasks to score each version of the agent | ⬜ |
-| Record and replay | Re-run a failed run with a different prompt or model | ⬜ |
-| Capstone task | One real job the finished agent completes end to end | ⬜ |
 
 ---
 

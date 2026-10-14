@@ -32,7 +32,7 @@ explains it.
 
 What comes next is in [ROADMAP.md](ROADMAP.md): the plan, organized around
 the problems every agent has to solve (control loop, tools, context, memory,
-safety, orchestration, interfaces, evaluation) plus a track on the model
+safety, orchestration, evaluation, interfaces) plus a track on the model
 itself.
 
 ## Setup

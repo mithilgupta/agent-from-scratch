@@ -8,10 +8,10 @@ prioritized yet; the order of steps gets decided later.
 
 > **Agent = Model + Harness**
 
-| Layer | What it is | Who builds it |
-|---|---|---|
-| **Model** | The function `f(text) → text`. Everything it knows and how it behaves was set during training. | AI labs |
-| **Harness** | All the ordinary code around the model: the loop, the tools, what goes into the prompt, what gets saved, what's allowed. | Us. **This project builds the harness.** |
+| Layer | What it is |
+|---|---|
+| **Model** | The function `f(text) → text`. Everything it knows and how it behaves was set during training. |
+| **Harness** | All the ordinary code around the model: the loop, the tools, what goes into the prompt, what gets saved, what's allowed. |
 
 The model never acts on its own; it only produces text. The harness turns that
 text into actions, feeds results back, and decides what the model gets to see

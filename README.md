@@ -39,7 +39,7 @@ The repo is organized by the build order's phases, one folder each:
 | 3 | [`phase-3-robust/`](phase-3-robust/) | Structured tool calls, MCP and better context |
 | 4 | [`phase-4-longer-tasks/`](phase-4-longer-tasks/) | Planning, compaction and long-term memory |
 | 5 | [`phase-5-multi-agent/`](phase-5-multi-agent/) | Subagents and specialized agents |
-| 6 | [`phase-6-integrations/`](phase-6-integrations/) | Plugins and integrations (GitHub, chat apps, schedules) |
+| 6 | [`phase-6-connect/`](phase-6-connect/) | Plugins and integrations (GitHub, chat apps, schedules) |
 
 ## Setup
 

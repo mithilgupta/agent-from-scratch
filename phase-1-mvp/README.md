@@ -1,6 +1,7 @@
-# Phase 1: MVP
+# Phase 1: MVP, a coding agent that can fix a bug safely
 
-A coding agent that can fix a bug safely.
+Give the agent the tools to explore, edit and run code, with safety checks
+before anything risky.
 
 **Done when:** given a small project with a failing test, the agent finds the
 bug, fixes it, runs the tests to confirm, and asks before anything risky.

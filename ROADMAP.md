@@ -123,7 +123,7 @@ Folder: [`phase-5-multi-agent/`](phase-5-multi-agent/)
 
 ### Phase 6: Connect it to the world
 
-Folder: [`phase-6-integrations/`](phase-6-integrations/)
+Folder: [`phase-6-connect/`](phase-6-connect/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|

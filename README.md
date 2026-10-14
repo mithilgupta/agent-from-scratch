@@ -30,9 +30,10 @@ explains it.
 |---|---|---|
 | 01 | [Minimal agent](01-minimal-agent/): one tool, the agent loop | ✅ |
 
-What comes next is in [ROADMAP.md](ROADMAP.md): a backlog of about 100
-components found in production coding agents (Claude Code, Codex CLI, Gemini
-CLI, Aider, OpenCode and others) and in other build-from-scratch projects.
+What comes next is in [ROADMAP.md](ROADMAP.md): the plan, organized around
+the problems every agent has to solve (control loop, tools, context, memory,
+safety, orchestration, interfaces, evaluation) plus a track on the model
+itself.
 
 ## Setup
 

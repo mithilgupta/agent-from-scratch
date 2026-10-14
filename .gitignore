@@ -1,0 +1,13 @@
+# Secrets
+.env
+
+# Scratch files the agent works on
+sandbox/
+
+# Python / Jupyter
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# OS
+.DS_Store

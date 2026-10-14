@@ -61,7 +61,7 @@ checking your own work.
 | Agent loop | Call model → tool requested? → run it → feed result back → repeat | Core | ✅ |
 | Step limit | A cap on iterations so a confused model can't loop forever | Core | ✅ |
 | To-do list | The model writes a checklist and ticks items off as it goes | Core | ⬜ |
-| Plan mode | Explore read-only first, propose a plan, edit only after approval | Later | ⬜ |
+| Plan mode | Explore read-only first, propose a plan, edit only after approval | Core | ⬜ |
 | Verify loop | Run tests or lint after a change and fix what fails | Core | ⬜ |
 | Goal check | A separate check decides whether the task is truly done | Later | ⬜ |
 | Loop detection | Notice the agent repeating itself and stop it | Later | ⬜ |
@@ -178,7 +178,7 @@ vs collaboration; matching model size to task difficulty.
 | Component | What it adds | Scope | Status |
 |---|---|---|---|
 | Subagents | Hand off a sub-task to a fresh agent; keep only its summary | Core | ⬜ |
-| Specialized agents | Explore, plan, build and review agents with different tools and prompts | Later | ⬜ |
+| Specialized agents | Explore, plan, build and review agents with different tools and prompts | Core | ⬜ |
 | Parallel agents | Several subagents working at once | Later | ⬜ |
 | Background work | Long tasks run in the background and report back | Skip | ⬜ |
 | Agent teams | Agents sharing a task list and messaging each other | Skip | ⬜ |

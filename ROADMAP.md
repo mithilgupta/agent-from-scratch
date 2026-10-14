@@ -49,7 +49,9 @@ decide it: **dependencies first** (for example, ask permission before giving
 the agent a shell), and **get to a working coding agent early, then measure
 it before making big changes**, so each later change can be judged by results.
 
-### Phase 0: Foundation (step 01)
+### Phase 0: Foundation
+
+Folder: [`phase-0-foundation/`](phase-0-foundation/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
@@ -60,6 +62,8 @@ it before making big changes**, so each later change can be judged by results.
 | — | Conversation history | Memory | Makes follow-up questions work | ✅ |
 
 ### Phase 1: MVP, a coding agent that can fix a bug safely
+
+Folder: [`phase-1-mvp/`](phase-1-mvp/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
@@ -76,6 +80,8 @@ the bug, fixes it, runs the tests to confirm, and asks before anything risky.
 
 ### Phase 2: See and measure it
 
+Folder: [`phase-2-measure/`](phase-2-measure/)
+
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
 | 8 | Run log | Evaluation | Record every call and tool result so runs can be inspected | ⬜ |
@@ -84,6 +90,8 @@ the bug, fixes it, runs the tests to confirm, and asks before anything risky.
 | 11 | Same harness, different models | Model | First use of the benchmark: how much does the model matter? | ⬜ |
 
 ### Phase 3: Make it robust and well-informed
+
+Folder: [`phase-3-robust/`](phase-3-robust/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
@@ -94,6 +102,8 @@ the bug, fixes it, runs the tests to confirm, and asks before anything risky.
 
 ### Phase 4: Handle longer tasks
 
+Folder: [`phase-4-longer-tasks/`](phase-4-longer-tasks/)
+
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
 | 16 | To-do list | Control loop | Keep multi-step tasks on track | ⬜ |
@@ -102,6 +112,8 @@ the bug, fixes it, runs the tests to confirm, and asks before anything risky.
 | 19 | Long-term notes | Memory | Remember things across sessions | ⬜ |
 
 ### Phase 5: Multiple agents
+
+Folder: [`phase-5-multi-agent/`](phase-5-multi-agent/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|

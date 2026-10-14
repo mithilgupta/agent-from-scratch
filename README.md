@@ -21,19 +21,24 @@ You ──► conversation ──► LLM ──► reply
             └── tool result ◄── your Python runs the tool
 ```
 
-## Steps
+## The plan
 
-Each step is a self-contained folder with a notebook to run and a README that
-explains it.
+**[ROADMAP.md](ROADMAP.md) is the center of this project.** It explains how
+agents work (organized around the problems every agent has to solve: control
+loop, tools, context, memory, safety, orchestration, evaluation, interfaces,
+plus a track on the model itself), and its **build order** says what gets
+built next. Status is tracked there.
 
-| # | Step | Status |
+The repo is organized by the build order's phases, one folder each:
+
+| Phase | Folder | Goal |
 |---|---|---|
-| 01 | [Minimal agent](01-minimal-agent/): one tool, the agent loop | ✅ |
-
-What comes next is in [ROADMAP.md](ROADMAP.md): the plan, organized around
-the problems every agent has to solve (control loop, tools, context, memory,
-safety, orchestration, evaluation, interfaces) plus a track on the model
-itself.
+| 0 | [`phase-0-foundation/`](phase-0-foundation/) | The minimal agent: one tool, one loop |
+| 1 | [`phase-1-mvp/`](phase-1-mvp/) | A coding agent that can fix a bug safely |
+| 2 | [`phase-2-measure/`](phase-2-measure/) | Record what it does, what it costs, how well it scores |
+| 3 | [`phase-3-robust/`](phase-3-robust/) | Structured tool calls and better context |
+| 4 | [`phase-4-longer-tasks/`](phase-4-longer-tasks/) | Planning, compaction and long-term memory |
+| 5 | [`phase-5-multi-agent/`](phase-5-multi-agent/) | Subagents and specialized agents |
 
 ## Setup
 
@@ -42,7 +47,7 @@ Requires Python 3.10+.
 ```bash
 pip install -r requirements.txt
 cp .env.example .env    # then fill in your API key
-jupyter lab             # open any step's agent.ipynb
+jupyter lab             # open a phase's notebook, starting with phase-0-foundation/
 ```
 
 **Works with any OpenAI-compatible provider.** Set three values in `.env`:

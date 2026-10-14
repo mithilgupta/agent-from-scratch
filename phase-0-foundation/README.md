@@ -1,7 +1,10 @@
-# Step 01: Minimal agent
+# Phase 0: Foundation
 
 The smallest thing that can be called an agent: **one tool, one loop**.
 Open [`agent.ipynb`](agent.ipynb) and run it top to bottom.
+
+Builds: agent loop, step limit, read file, system prompt, conversation history.
+See [Phase 0 in the roadmap](../ROADMAP.md#phase-0-foundation).
 
 ## The one idea to take away
 
@@ -59,12 +62,12 @@ The `conversation` list *is* the agent's memory. Every memory feature in real
 LLM apps (chat history, summaries, saved notes, retrieval) comes down to
 deciding what text goes into that list.
 
-## Limitations (what later steps fix)
+## Limitations (what later phases fix)
 
-- It can only **read**, so it can explain a bug but not fix it → Step 02
-- The tool is described **by hand** in the prompt → Step 03
-- The tool call is found by **parsing text**; a slightly different format is silently missed → Step 06
-- `conversation` grows forever → Step 05
+- It can only **read**, so it can explain a bug but not fix it → Phase 1 (write and edit files)
+- The tool is described **by hand** in the prompt → Phase 1 (tool registry)
+- The tool call is found by **parsing text**; a slightly different format is silently missed → Phase 3 (native tool calling)
+- `conversation` grows forever → Phase 4 (compaction)
 
 ## Try it
 

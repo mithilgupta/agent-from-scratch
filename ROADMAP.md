@@ -281,7 +281,8 @@ vs collaboration; matching model size to task difficulty.
 
 **Why it matters:** Without measurement you can't tell whether a new
 component helped or hurt. This is the most data-science-like part of the
-project, and the part most tutorials skip.
+project, and the part most tutorials skip (4 of the 5 we checked; see
+[RELATED-WORK.md](RELATED-WORK.md)).
 
 **Key ideas:** logging every step; test sets of tasks; comparing versions;
 tracking tokens and dollars.

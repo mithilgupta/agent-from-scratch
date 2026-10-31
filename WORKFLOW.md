@@ -27,9 +27,14 @@ phase-1-mvp/
 Notebooks are named `phase_N_agent.ipynb`. If a phase needs more than one,
 add a suffix: `phase_N_agent_2.ipynb`, or a short topic name.
 
-The **README** is the detailed doc for the phase: the explanation behind the
-notebooks, kept up to date as the phase is built. The roadmap stays the
-overview; detail goes in the phase README, so it scales as phases grow.
+**The notebook is the lab; the README and `agent_vN/` are what comes out of
+it.** Everything made while working lives in the notebook: game plans,
+evidence, code, observations and dead ends. The **README** is the phase's
+final write-up for someone who wasn't there: what was built, the decisions
+and why, with links to the evidence. It's written once, after the notebook
+works end to end and `agent_vN/` has been refactored, so it describes the
+prod code as it actually is. The roadmap stays the overview; detail goes in
+the phase README, so it scales as phases grow.
 
 ## The rules
 
@@ -43,25 +48,39 @@ overview; detail goes in the phase README, so it scales as phases grow.
    `read_file`, then write a new `ask()` that uses the tool registry. The
    notebook's version becomes v1's `ask()`.
 
-3. **Shadow, don't patch.** To change an imported function, define a new one
+3. **Every step starts with a game plan, agreed before any code.** The first
+   cell of each roadmap step's section is a markdown "game plan":
+   - **What and why:** the problem this step solves.
+   - **Sub-steps:** a numbered list, each small enough to build and run in
+     one go.
+   - **Evidence:** what the plan is based on, cited: our own code (file and
+     line), the roadmap, and how real agents do it (source files or docs,
+     linked). Anything without a source is labeled as judgment.
+   - **Done when:** how we'll know the step works.
+
+   The sub-steps are then built one at a time, in the agreed order. If the
+   plan needs to change along the way, the game plan cell is updated first.
+
+4. **Shadow, don't patch.** To change an imported function, define a new one
    with the same name in the notebook. Never reach into the module
    (`agent_v0.read_file = ...`): the module's other functions would silently
    use the replacement, so the code you read is no longer the code that runs.
 
-4. **Notebooks per phase: as many as the story needs.** Usually one, with a
+5. **Notebooks per phase: as many as the story needs.** Usually one, with a
    section per roadmap step; split into two or more where it reads better.
    Steps within a phase build on each other inside the notebooks, not through
    the prod package.
 
-5. **The phase ends with a refactor into prod code.** Once the whole phase
+6. **The phase ends with a refactor into prod code.** Once the whole phase
    works end to end in the notebooks, design `agent_vN/` properly: which
    modules, what interfaces, what tests. This is a step of its own, not a
    copy-paste.
 
-6. **Check the refactor is faithful.** Run the notebook's final end-to-end
-   demo against `agent_vN` and confirm the same behavior.
+7. **Check the refactor is faithful.** Run the notebook's final end-to-end
+   demo against `agent_vN` and confirm the same behavior. Then write the
+   phase README from the notebook.
 
-7. **Frozen means frozen.** Once a phase ends, its prod package never changes.
+8. **Frozen means frozen.** Once a phase ends, its prod package never changes.
    A bug found later in `agent_v0` is fixed in the current phase's code, not
    back-ported.
 

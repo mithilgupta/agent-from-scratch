@@ -9,7 +9,7 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
   the module.
 - Write `agent_vN/` only after the whole phase works in the notebooks, as a
   deliberate refactor; then run the notebook's end-to-end demo against it.
-- Each phase folder has three parts: `README.md` (the phase's detailed doc,
+- Each phase folder has three parts: `phase_N_README.md` (the phase's detailed doc,
   kept up to date as it's built), the notebooks, and `agent_vN/`.
 - Earlier phases' packages are frozen. Fix forward, never back-port.
 - The user is learning: go one step at a time and explain before racing

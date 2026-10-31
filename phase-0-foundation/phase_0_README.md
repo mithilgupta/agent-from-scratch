@@ -1,7 +1,7 @@
 # Phase 0: Foundation
 
 The smallest thing that can be called an agent: **one tool, one loop**.
-Open [`agent.ipynb`](agent.ipynb) and run it top to bottom.
+Open [`phase_0_agent.ipynb`](phase_0_agent.ipynb) and run it top to bottom.
 
 Builds: agent loop, step limit, read file, system prompt, conversation history.
 See [Phase 0 in the roadmap](../ROADMAP.md#phase-0-foundation).

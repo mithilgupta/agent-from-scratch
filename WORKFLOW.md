@@ -15,14 +15,17 @@ Each phase folder holds three things:
 
 ```
 phase-0-foundation/
-├── README.md        ← the phase's detailed doc: what it builds and why
-├── agent.ipynb      ← experiments: where the phase is learned
-└── agent_v0/        ← prod code: written at the end of the phase, then frozen
+├── phase_0_README.md    ← the phase's detailed doc: what it builds and why
+├── phase_0_agent.ipynb  ← experiments: where the phase is learned
+└── agent_v0/            ← prod code: written at the end of the phase, then frozen
 phase-1-mvp/
-├── README.md
-├── *.ipynb          ← imports agent_v0 only
-└── agent_v1/        ← written at the end of Phase 1, then frozen
+├── phase_1_README.md
+├── phase_1_agent.ipynb  ← imports agent_v0 only
+└── agent_v1/            ← written at the end of Phase 1, then frozen
 ```
+
+Notebooks are named `phase_N_agent.ipynb`. If a phase needs more than one,
+add a suffix: `phase_N_agent_2.ipynb`, or a short topic name.
 
 The **README** is the detailed doc for the phase: the explanation behind the
 notebooks, kept up to date as the phase is built. The roadmap stays the

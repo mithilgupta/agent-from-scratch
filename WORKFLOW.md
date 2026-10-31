@@ -49,13 +49,38 @@ the phase README, so it scales as phases grow.
    notebook's version becomes v1's `ask()`.
 
 3. **Every step starts with a game plan, agreed before any code.** The first
-   cell of each roadmap step's section is a markdown "game plan":
-   - **What and why:** the problem this step solves.
-   - **Sub-steps:** a numbered list, each small enough to build and run in
-     one go.
-   - **Evidence:** what the plan is based on, cited: our own code (file and
-     line), the roadmap, and how real agents do it (source files or docs,
-     linked). Anything without a source is labeled as judgment.
+   cell of each roadmap step's section is a markdown "game plan", in this
+   order, like a design doc:
+   1. **What we're doing and why:** the problem statement, grounded in our
+      own code (file and line) and the roadmap.
+   2. **Evidence: how real agents do it:** the literature review (below).
+   3. **Sub-steps (proposed):** derived from the problem and the evidence,
+      each small enough to build and run in one go, with a **"Based on"**
+      column naming the evidence each follows. Anything without a source is
+      labeled as judgment.
+   4. **Decisions:** design choices the evidence doesn't settle, for the
+      user to make.
+   5. **Done when:** the acceptance criteria.
+
+   **The evidence table** (in every step where it applies): a table
+     comparing how several real agents solve this step, from their **actual
+     source code**, read during the step, with links to the exact lines. One
+     row per agent: what it does and where. The notebook is how *we* do it;
+     the table shows how everyone else does, in **one table with two
+     tiers**: small-scale projects (from-scratch tutorials and minimal
+     agents) and **the big five** open-source industry agents, researched
+     for every step: [Gemini CLI](https://github.com/google-gemini/gemini-cli),
+     [Codex CLI](https://github.com/openai/codex),
+     [opencode](https://github.com/anomalyco/opencode),
+     [OpenHands](https://github.com/OpenHands/software-agent-sdk) and
+     [Aider](https://github.com/Aider-AI/aider). Not every agent does every
+     step, and a row saying so is a finding too. Links are pinned to the
+     commit read. Closed agents (Claude Code, Cursor) appear only through
+     their public docs, labeled as such. Then **what they agree on** (and
+     so what we follow) and **where they differ** (and why). This is the
+     part that goes beyond a tutorial: it shows the design space, not just
+     one answer. See the step 1 game plan in `phase_1_agent.ipynb` for the
+     model to follow.
    - **Done when:** how we'll know the step works.
 
    The sub-steps are then built one at a time, in the agreed order. If the

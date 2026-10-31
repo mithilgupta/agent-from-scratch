@@ -17,13 +17,25 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
   links.
 - Earlier phases' packages are frozen. Fix forward, never back-port.
 - **Every roadmap step starts with a game plan cell, agreed before any code.**
-  A markdown cell at the top of the step's section with: what we're doing and
-  why; the numbered sub-steps (one piece each); the evidence behind them,
-  cited (our own code with file:line, the roadmap line, and real agents'
-  source files or docs actually read this session, with links); and what
-  "done" looks like. Anything without a source is labeled as Claude's
+  A markdown cell at the top of the step's section, in this order:
+  (1) what we're doing and why, the problem statement (our code with
+  file:line, the roadmap line); (2) evidence: how real agents do it, the
+  literature review (source actually read this session, with links);
+  (3) proposed sub-steps derived from 1 and 2, one piece each, with a
+  "Based on" column; (4) decisions for the user; (5) done when. Anything without a source is labeled as Claude's
   judgment. Never pull sub-steps from memory unannounced. Draft it, let the
   user question and change it, and write no code until they agree.
+- **Every game plan includes a "How real agents do it" table**, wherever it
+  can apply. The user values this most ("this is GOLD"). Read the real
+  agents' source during the step (never describe them from memory), one row
+  per agent with linked file:line, then "what they agree on → what we
+  follow" and "where they differ". One table, two tiers: small-scale
+  projects *and* the big five industry agents, every step: Gemini CLI,
+  Codex CLI, opencode, OpenHands (read `OpenHands/software-agent-sdk`, where
+  the agent lives) and Aider. Pin links to the commit SHA read. Closed
+  agents only via public docs, labeled. The notebook is how we do it; the table is how
+  everyone else does. Model: the step 1 game plan in
+  `phase-1-mvp/phase_1_agent.ipynb`.
 - **The user is learning. "Step by step" means one small piece per turn:**
   - A piece is one idea, usually 1–3 notebook cells (e.g. "print Phase 0's
     `ask()` and point out where `read_file` is hard-coded"). A roadmap step

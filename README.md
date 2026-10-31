@@ -33,6 +33,19 @@ built next. Status is tracked there.
 in notebooks first, then frozen production code (`agent_v0`, `agent_v1`, ...)
 that the next phase imports.
 
+## Compared with real agents at every step
+
+Each step starts by reading how real agents solve the same problem, in their
+actual source code, with links to the exact lines: small from-scratch projects
+and the five big open-source coding agents,
+[Gemini CLI](https://github.com/google-gemini/gemini-cli),
+[Codex CLI](https://github.com/openai/codex),
+[opencode](https://github.com/anomalyco/opencode),
+[OpenHands](https://github.com/OpenHands/OpenHands) and
+[Aider](https://github.com/Aider-AI/aider). So each piece shows not just one
+way to build it, but how the industry does, where they agree, and where they
+differ.
+
 The repo is organized by the build order's phases, one folder each:
 
 | Phase | Folder | Goal |

@@ -39,8 +39,9 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
   everyone else does. Model: the step 1 game plan in
   `phase-1-mvp/phase_1_agent.ipynb`.
 - **The user is learning. "Step by step" means one sub-step per turn:**
-  - **Each roadmap step has 2–3 sub-steps at most** (explicit instruction,
-    2026-10-31). The user is a practicing data scientist: a sub-step is a
+  - **Each roadmap step has 1–3 sub-steps: as few as it needs** (explicit
+    instruction, 2026-10-31). One is fine, e.g. a step that only adds a
+    tool. The user is a practicing data scientist: a sub-step is a
     meaningful chunk (e.g. "build the registry, prompt, parser and
     dispatcher"), not a micro-step per function. Step 1 had 7 sub-steps,
     which was too many.

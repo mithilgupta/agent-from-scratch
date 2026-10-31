@@ -55,7 +55,8 @@ the phase README, so it scales as phases grow.
       own code (file and line) and the roadmap.
    2. **Evidence: how real agents do it:** the literature review (below).
    3. **Sub-steps (proposed):** derived from the problem and the evidence,
-      **2–3 per step at most**, each a meaningful chunk built and run in one
+      **1–3 per step, as few as it needs** (a step that only adds a tool
+      can be one), each a meaningful chunk built and run in one
       go (not one sub-step per function), with a **"Based on"** column
       naming the evidence each follows. Anything without a source is
       labeled as judgment.

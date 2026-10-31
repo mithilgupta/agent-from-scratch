@@ -89,6 +89,13 @@ Folder: [`phase-2-measure/`](phase-2-measure/)
 | 10 | Task benchmark | Evaluation | A small fixed set of tasks to score every later change against | ⬜ |
 | 11 | Same harness, different models | Model | First use of the benchmark: how much does the model matter? | ⬜ |
 
+**Experiments queued for the benchmark** (found while building earlier
+steps; run once step 10 exists):
+
+| Experiment | Question | From |
+|---|---|---|
+| Example line vs no example | Does showing one concrete tool-call line in the prompt make the model follow the format more reliably than a generic pattern alone? | Phase 1, step 1 (decision 2) |
+
 ### Phase 3: Make it robust and well-informed
 
 Folder: [`phase-3-robust/`](phase-3-robust/)

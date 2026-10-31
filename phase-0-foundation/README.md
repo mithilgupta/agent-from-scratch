@@ -16,10 +16,8 @@ code. What makes it an *agent* is ordinary Python around it:
 1. We tell the model (in the system prompt) that if it wants a file, it should
    write a line in a special format: `tool: read_file({"filename": "..."})`.
 2. Our code checks each reply for that line.
-3. If it's there, **our code** reads the file and sends the contents back as the
-   next message.
-4. Repeat until the model replies without asking for a tool. That reply is the
-   answer.
+3. If it's there, **our code** reads the file and sends the contents back as the next message.
+4. Repeat until the model replies without asking for a tool. That reply is the answer.
 
 ## The pieces
 

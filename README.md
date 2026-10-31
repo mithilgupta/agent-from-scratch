@@ -29,6 +29,10 @@ loop, tools, context, memory, safety, orchestration, evaluation, interfaces,
 plus a track on the model itself), and its **build order** says what gets
 built next. Status is tracked there.
 
+**[WORKFLOW.md](WORKFLOW.md)** explains how each phase is built: experiments
+in notebooks first, then frozen production code (`agent_v0`, `agent_v1`, ...)
+that the next phase imports.
+
 The repo is organized by the build order's phases, one folder each:
 
 | Phase | Folder | Goal |

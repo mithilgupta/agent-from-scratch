@@ -67,6 +67,36 @@ deciding what text goes into that list.
 - The tool call is found by **parsing text**; a slightly different format is silently missed → Phase 3 (native tool calling)
 - `conversation` grows forever → Phase 4 (compaction)
 
+## Prod code: `agent_v0`
+
+Once the notebook was done, its code was moved into a package,
+[`agent_v0/`](agent_v0/), so Phase 1 can import it (see
+[WORKFLOW.md](../WORKFLOW.md)). It's **frozen**: later phases never change it.
+
+| File | Holds |
+|---|---|
+| `llm.py` | `get_client()`, `call_llm()` |
+| `tools.py` | `read_file()` |
+| `loop.py` | `SYSTEM_PROMPT`, `parse_tool_call()`, `new_conversation()`, `ask()` |
+| `tests/` | Offline tests; none of them call the model |
+
+The code is the notebook's, with two changes to make it importable:
+
+- **The client connects on first use** (`get_client()`), not at import, so
+  importing the package doesn't need a `.env`.
+- **No global `conversation`.** `ask(message, conversation)` takes the list
+  explicitly, and `new_conversation()` makes a fresh one:
+
+```python
+import sys; sys.path.insert(0, "../phase-0-foundation")
+from agent_v0 import ask, new_conversation
+
+conversation = new_conversation()
+ask("What will sandbox/hello.py print when I run it?", conversation)
+```
+
+Run the tests with `pytest phase-0-foundation/agent_v0` from the repo root.
+
 ## Try it
 
 Predict what happens before you run each one:

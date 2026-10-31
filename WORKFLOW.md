@@ -80,3 +80,5 @@ overview; detail goes in the phase README, so it scales as phases grow.
   never collide.
 - Notebooks make a previous phase importable with an explicit `sys.path` line
   pointing at its folder.
+- Tests live inside the package (`agent_vN/tests/`), are frozen with it, and
+  never call the model. Run them with `pytest phase-N-.../agent_vN`.

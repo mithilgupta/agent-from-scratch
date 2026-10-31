@@ -15,4 +15,8 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
 - The user is learning: go one step at a time and explain before racing
   ahead. Commit or push only when asked.
 
+Environment: notebooks use the `agents` Jupyter kernel; run code and tests
+with `/opt/anaconda3/envs/agents/bin/python` (the system `python3` is 3.9 and
+lacks the packages).
+
 [ROADMAP.md](ROADMAP.md) has the build order and status.

@@ -67,7 +67,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
-| 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite | ⬜ |
+| 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite | ✅ |
 | 2 | List and find files | Tools | The agent has to explore a project before it can change it | ⬜ |
 | 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ⬜ |
 | 4 | Write and edit files | Tools | The moment the agent can actually change code | ⬜ |
@@ -185,7 +185,7 @@ information; keeping outputs a manageable size.
 | Run shell commands | Run tests, scripts and git; read the output | Core | ⬜ |
 | Web fetch and search | Read docs and look up errors | Later | ⬜ |
 | Ask the user | Ask a clarifying question mid-task instead of guessing | Later | ⬜ |
-| Tool registry | Describe tools automatically from their code; add a tool without touching the loop | Core | ⬜ |
+| Tool registry | Describe tools automatically from their code; add a tool without touching the loop | Core | ✅ |
 | Native tool calling | The API returns structured tool requests instead of us parsing text | Core | ⬜ |
 | Parallel tool calls | Run several requested tools from one reply | Later | ⬜ |
 | Large output handling | Truncate huge results and keep the full version somewhere retrievable | Later | ⬜ |

@@ -55,8 +55,9 @@ the phase README, so it scales as phases grow.
       own code (file and line) and the roadmap.
    2. **Evidence: how real agents do it:** the literature review (below).
    3. **Sub-steps (proposed):** derived from the problem and the evidence,
-      each small enough to build and run in one go, with a **"Based on"**
-      column naming the evidence each follows. Anything without a source is
+      **2–3 per step at most**, each a meaningful chunk built and run in one
+      go (not one sub-step per function), with a **"Based on"** column
+      naming the evidence each follows. Anything without a source is
       labeled as judgment.
    4. **Decisions:** design choices the evidence doesn't settle, for the
       user to make.

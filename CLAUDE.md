@@ -38,10 +38,13 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
   agents only via public docs, labeled. The notebook is how we do it; the table is how
   everyone else does. Model: the step 1 game plan in
   `phase-1-mvp/phase_1_agent.ipynb`.
-- **The user is learning. "Step by step" means one small piece per turn:**
-  - A piece is one idea, usually 1–3 notebook cells (e.g. "print Phase 0's
-    `ask()` and point out where `read_file` is hard-coded"). A roadmap step
-    or notebook section is many pieces, never one turn.
+- **The user is learning. "Step by step" means one sub-step per turn:**
+  - **Each roadmap step has 2–3 sub-steps at most** (explicit instruction,
+    2026-10-31). The user is a practicing data scientist: a sub-step is a
+    meaningful chunk (e.g. "build the registry, prompt, parser and
+    dispatcher"), not a micro-step per function. Step 1 had 7 sub-steps,
+    which was too many.
+  - A roadmap step is never one turn: build one sub-step, then stop.
   - Explain the piece in plain words: what it is, why it's needed, what to
     look for when running it.
   - Then **stop**. The user runs it and asks questions; add the next piece
@@ -49,6 +52,11 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
     finish a section in one go.
   - Ask before writing a piece if its design isn't obvious; the user wants
     to understand choices, not receive them.
+  - **Keep each piece minimal.** When it rewrites a Phase N-1 function,
+    start from that function and change only what the game plan says; mark
+    the changed lines and describe it as "the old version plus these
+    changes". No extra checks, edge cases or behavior changes the plan
+    didn't ask for.
 - The user may have the notebook open in Jupyter, which overwrites changes
   on disk when it autosaves. After editing a notebook, tell the user to
   reload it from disk (File → Reload Notebook from Disk) before running it.

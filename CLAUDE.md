@@ -32,7 +32,9 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
   follow" and "where they differ". One table, two tiers: small-scale
   projects *and* the big five industry agents, every step: Gemini CLI,
   Codex CLI, opencode, OpenHands (read `OpenHands/software-agent-sdk`, where
-  the agent lives) and Aider. Pin links to the commit SHA read. Closed
+  the agent lives) and Aider. Pin links to the commit SHA read. Research is
+  a dated snapshot: never go back to re-check or update links in earlier
+  steps. Closed
   agents only via public docs, labeled. The notebook is how we do it; the table is how
   everyone else does. Model: the step 1 game plan in
   `phase-1-mvp/phase_1_agent.ipynb`.

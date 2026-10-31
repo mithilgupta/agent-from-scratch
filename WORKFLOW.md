@@ -74,8 +74,11 @@ the phase README, so it scales as phases grow.
      [opencode](https://github.com/anomalyco/opencode),
      [OpenHands](https://github.com/OpenHands/software-agent-sdk) and
      [Aider](https://github.com/Aider-AI/aider). Not every agent does every
-     step, and a row saying so is a finding too. Links are pinned to the
-     commit read. Closed agents (Claude Code, Cursor) appear only through
+     step, and a row saying so is a finding too. **The research is a
+     snapshot**, done once when the step is written: links are pinned to the
+     commit read, and are never updated afterwards. These repos change
+     daily, so a table describes the agents as they were on its date; that's
+     a stated limitation, not something to keep chasing. Closed agents (Claude Code, Cursor) appear only through
      their public docs, labeled as such. Then **what they agree on** (and
      so what we follow) and **where they differ** (and why). This is the
      part that goes beyond a tutorial: it shows the design space, not just

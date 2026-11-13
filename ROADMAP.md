@@ -68,7 +68,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 | # | Component | Topic | Why here | Status |
 |---|---|---|---|---|
 | 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite | ✅ |
-| 2 | List and find files | Tools | The agent has to explore a project before it can change it | ⬜ |
+| 2 | List and find files | Tools | The agent has to explore a project before it can change it | ✅ |
 | 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ⬜ |
 | 4 | Write and edit files | Tools | The moment the agent can actually change code | ⬜ |
 | 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ⬜ |
@@ -95,6 +95,7 @@ steps; run once step 10 exists):
 | Experiment | Question | From |
 |---|---|---|
 | Example line vs no example | Does showing one concrete tool-call line in the prompt make the model follow the format more reliably than a generic pattern alone? | Phase 1, step 1 (decision 2) |
+| Tool description vs feedback in the result | When the model searches wrongly, what corrects it more often: a clearer tool description, or a note in the result saying what to try? In one run, the description alone didn't stop a top-folder-only search; the note in the empty result did. | Phase 1, step 2 (2b) |
 
 ### Phase 3: Make it robust and well-informed
 
@@ -179,7 +180,7 @@ information; keeping outputs a manageable size.
 | Component | What it adds | Scope | Status |
 |---|---|---|---|
 | Read file | See a file's contents | Core | ✅ |
-| List and find files | Explore a project's structure | Core | ⬜ |
+| List and find files | Explore a project's structure | Core | ✅ |
 | Write and edit files | Create files; replace an exact snippet, failing clearly if it isn't found | Core | ⬜ |
 | Search contents | Find code by pattern across a project | Later | ⬜ |
 | Run shell commands | Run tests, scripts and git; read the output | Core | ⬜ |

@@ -53,11 +53,21 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
     finish a section in one go.
   - Ask before writing a piece if its design isn't obvious; the user wants
     to understand choices, not receive them.
+  - **One cell per sub-step** (explicit instruction, 2026-11-12). If a
+    sub-step has several functions, they go in the same cell; checks too.
+    Don't spread a sub-step over markdown + code + check cells: the
+    notebook must stay readable and usable, not a behemoth.
   - **Keep each piece minimal.** When it rewrites a Phase N-1 function,
     start from that function and change only what the game plan says; mark
     the changed lines and describe it as "the old version plus these
     changes". No extra checks, edge cases or behavior changes the plan
     didn't ask for.
+- **This is a proof of concept for understanding how agents work, not an
+  enterprise app** (explicit instruction, 2026-11-12). Tool functions only
+  need to work for the demo; their edge cases and polish are refined at the
+  end, if ever. When testing, surface findings about agent mechanics (the
+  loop, tool calling, safety boundaries, context, model behavior), not
+  edge cases of a particular tool function.
 - The user may have the notebook open in Jupyter, which overwrites changes
   on disk when it autosaves. After editing a notebook, tell the user to
   reload it from disk (File → Reload Notebook from Disk) before running it.

@@ -32,6 +32,12 @@ this project, and decodingai is the closest prior work on it.
 | [SWE-agent/mini-swe-agent](https://github.com/SWE-agent/mini-swe-agent) | A ~100-line agent from the SWE-bench team, not a tutorial | Measured heavily on public benchmarks (SWE-bench, ProgramBench), and used to compare *models* on a fixed harness on the SWE-bench bash-only leaderboard. |
 | [walkinglabs/learn-harness-engineering](https://github.com/walkinglabs/learn-harness-engineering) | A course on the files and process around agents you *use* (`AGENTS.md`, `feature_list.json`, progress logs, `init.sh`) with Claude Code or Codex | Doesn't build an agent; its "minimal harness loop" is a stub with no model call. Its Project 01 is a manual with/without comparison, with no benchmark or cost tracking. |
 
+## Surveys
+
+| Paper | What it is | Relation to this project |
+|---|---|---|
+| Barbaste, Darrigol, Vu & Wiltberger, [*Harness Engineering: Anatomy, Architecture, and Evolution of Coding Agents*](https://arxiv.org/abs/2609.00006) (Wavestone AI Lab, July 2026; CC-BY 4.0) | A source-code study of 11 coding agents (our big five plus Claude Code, Mistral Vibe, mini-swe-agent, Hermes, Pi, OpenClaw), split into seven subsystems. 29 design patterns, 18 recommendations, a 90-line minimum agent. Written with Claude Code's help (its own disclosure, p.74). | The closest prior work to our "how real agents do it" tables, at a much larger scale. **It describes; it doesn't build or measure:** it compares by subsystem without line numbers (p.67), runs no agent (p.66), and lists a cross-agent benchmark and safety evaluation as future work (p.74). We cite it as a cross-check in game plans, but still read the source ourselves. Its Claude Code findings come from a leaked source snapshot (March 2026), so we don't use them. |
+
 ## What's still distinct about this project
 
 Against the repos above only (not a full survey):

@@ -72,7 +72,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 | 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ✅ |
 | 4 | Write and edit files | Tools | The moment the agent can actually change code | ✅ (edit only; creating files deferred) |
 | 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ✅ |
-| 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ⬜ |
+| 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ✅ |
 | 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent | ⬜ |
 
 **MVP done when:** given a small project with a failing test, the agent finds
@@ -96,7 +96,8 @@ steps; run once step 10 exists):
 |---|---|---|
 | Example line vs no example | Does showing one concrete tool-call line in the prompt make the model follow the format more reliably than a generic pattern alone? | Phase 1, step 1 (decision 2) |
 | Tool description vs feedback in the result | When the model searches wrongly, what corrects it more often: a clearer tool description, or a note in the result saying what to try? In one run, the description alone didn't stop a top-folder-only search; the note in the empty result did. | Phase 1, step 2 (2b) |
-| Whole file vs find-and-replace | On our model, which edit format produces more successful fixes and fewer malformed edits? In Aider's benchmark, Qwen2.5-Coder-32B solved 16.4% of tasks sending whole files vs 8.0% with find-and-replace. | Phase 1, step 4 (decision A) |
+| Whole file vs find-and-replace | On our model, which edit format produces more successful fixes and fewer malformed edits? In Aider's benchmark, Qwen2.5-Coder-32B solved 16.4% of tasks sending whole files vs 8.0% with find-and-replace. | Phase 1, step 4 (edit format) |
+| Does a refusal stop the goal, or only the action? | When the user refuses a tool call, does the model stop, or try to reach the same goal through other tools? Does a refusal with a reason ("too risky") stop it more often than a bare "no"? In one run, a bare "no" to `cat ../ROADMAP.md` led the model straight to `read_file`, then three `find_files` searches, until the step limit ended it; in another, "too risky" made it stop and ask. A safety question as much as a mechanics one. | Phase 1, step 6 (shell commands, live run) |
 
 **An idea to explore here: how good are the agent's fixes, and how would we
 know?** (Noted 2026-11-26, from Phase 1's write-and-edit-files step; not
@@ -198,7 +199,7 @@ information; keeping outputs a manageable size.
 | List and find files | Explore a project's structure | Core | ✅ |
 | Write and edit files | Create files; replace an exact snippet, failing clearly if it isn't found | Core | ✅ edit; ⬜ create |
 | Search contents | Find code by pattern across a project | Later | ⬜ |
-| Run shell commands | Run tests, scripts and git; read the output | Core | ⬜ |
+| Run shell commands | Run tests, scripts and git; read the output | Core | ✅ |
 | Web fetch and search | Read docs and look up errors | Later | ⬜ |
 | Ask the user | Ask a clarifying question mid-task instead of guessing | Later | ⬜ |
 | Tool registry | Describe tools automatically from their code; add a tool without touching the loop | Core | ✅ |

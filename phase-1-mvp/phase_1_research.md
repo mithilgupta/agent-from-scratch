@@ -505,3 +505,121 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 - **A refusal didn't stop the goal.** Asked to show `../ROADMAP.md` with `cat`, the model proposed `cat ../ROADMAP.md | head -5`; you answered a bare "no". It went straight to other routes to the same file: `read_file("../ROADMAP.md")` (refused by the folder check), then three `find_files` searches for anything named like ROADMAP (nothing outside `sandbox/` can be found), until the 5-step limit ended the run.
 - **Every layer was needed:** your refusal stopped the shell, the folder check stopped the file tool, the search was confined to the project, and the step limit ended the loop. No single guard would have been enough.
 - **Contrast with step 5:** there, a refusal *with a reason* ("too risky") made the model stop and ask. One difference this time is the bare "no". Two runs can't separate the causes, so it's queued as a Phase 2 benchmark experiment ("does a refusal stop the goal, or only the action?", in `ROADMAP.md`).
+
+---
+
+## Step 7: Verify loop
+
+*Draft, 2026-11-26. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+
+### 1. What we're doing and why
+
+**The goal in one sentence:** after changing code, the agent runs the tests, and if they still fail, it reads the output, fixes again, and repeats until they pass. That's the last part of Phase 1's goal (*"runs the tests to confirm the fix"*), and what the roadmap says makes it a *coding* agent ([`ROADMAP.md:76`](../ROADMAP.md)): *"Run the tests, fix what fails, repeat."*
+
+The pieces already exist: the agent can run tests (step 6), read files, and edit them (step 4), each risky action after your yes (step 5). The step 6 live run showed it running `pytest` and explaining the failure. **What's missing is the habit of checking its own work**, and two things in our loop that would get in the way:
+- Our system prompt (`build_system_prompt`, section 1c of the notebook) says nothing about testing, so nothing tells the model to re-run the tests after a fix.
+- `ask()` stops after **5** model calls. A minimal fix cycle (run tests → read the file → edit → run tests → answer) needs exactly 5, so any extra look ends the run. Step 6's second run hit that limit.
+
+**The problem broken down (MECE).**
+
+*By what the verify loop needs:*
+
+| Part | What it means | Have it? |
+|---|---|---|
+| **A check to run** | Something that says pass or fail: here, `pytest` | ✅ through `run_command` (step 6) |
+| **A reason to run it** | Something that makes the agent check after each change, instead of declaring itself done | ❌ This step |
+| **Room to repeat** | Enough steps for run → fix → run again, maybe twice | ❌ The 5-call limit is too tight |
+| **A way to stop** | Done when the tests pass; give up after a limit | ✅ The model stops when it's done; the step limit is the backstop |
+
+*By who decides that the work is done:*
+
+| Who | How |
+|---|---|
+| **The model itself** | It runs the check and judges the result (asked to, in the prompt) |
+| **The harness** | Our code runs the check and sends failures back, whatever the model thinks |
+| **A second model** | A separate model call judges whether the goal is met |
+
+### 2. Evidence: how real agents do it
+
+Source code read on 2026-11-26 from local clones, links pinned to the commit read. **This is a snapshot:** these repos change daily.
+
+**By question:**
+
+| Question | What real agents do |
+|---|---|
+| Is verifying asked for in the prompt? | **Yes, almost everywhere:** Codex (*"Validating your work"*: start with the most specific test, then broader ones), Gemini CLI (*"Validation is the only path to finality"*; for bug fixes, *"empirically reproduce the failure with a new test case or reproduction script before applying the fix"*), opencode (*"Verify the correctness of your solution through execution whenever possible"*), OpenHands (*"For bug fixes: Create tests to verify issues before implementing fixes"*, then a VERIFICATION step), mini-swe-agent (reproduce, fix, *"Verify your fix works by running your script again"*). **Not in the small tutorials:** learn-claude-code's basic agent and ghuntley have no testing instruction. |
+| Does the loop force a check? | **Aider does:** with `auto_test` on and a test command configured, it runs the tests after every edit and, if they fail (and you agree), sends the errors back to the model, up to 3 times (`max_reflections`). **Claude Code can,** with a Stop hook: a script runs when Claude tries to finish, and failures send it back to work. |
+| Does a second model judge "done"? | **learn-claude-code's `s17_goal_loop`:** *"a separate evaluator reads the conversation, decides whether the completion condition holds, and sends unfinished work back."* **Claude Code's `/goal`**: *"a condition that a separate model checks against the conversation after every turn."* The survey also lists OpenHands' `/goal` endpoint (an LLM judge over each finished run). |
+| Does the instruction depend on the model? | **Yes, in opencode:** it has a different system prompt per model family, and they disagree. One says to verify *"whenever possible and reasonable"*; another says *"Do not write tests for reversible, low-impact changes"*. |
+| What do the docs say goes wrong without it? | Claude Code's best practices: *"Claude said it was done and it wasn't quite, usually because it had no way to check its own work."* And: ask for **evidence**, *"the command it ran and its output ... 'All tests pass' on its own tells you very little."* |
+
+**One agent at a time:**
+
+| Tier | Agent | How it checks its own fix | Source |
+|---|---|---|---|
+| Small scale | **learn-claude-code** | The basic agent has no testing instruction. A later lesson, `s17_goal_loop`, adds a **goal loop**: when the worker model stops, a separate evaluator model decides whether the goal holds (e.g. *"pytest tests exits with code 0"*) and sends unfinished work back. | [`s17_goal_loop/code.py:1-25`](https://github.com/shareAI-lab/learn-claude-code/blob/7226f555d48900076eba126acf37c9ed5f002b5d/s17_goal_loop/code.py#L1-L25) |
+| Small scale | **ghuntley** | **No verification** in the prompt or loop. | (none found) |
+| Small scale | **mini-swe-agent** | **Prompt:** a 6-step workflow: find and read files, create a script that reproduces the issue, edit, *"Verify your fix works by running your script again"*, test edge cases, submit. | [`config/default.yaml:22-32`](https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/config/default.yaml#L22-L32) |
+| Industry | **Gemini CLI** | **Prompt:** a *"Plan -> Act -> Validate"* cycle, with *"Validation is the only path to finality. Never assume success or settle for unverified changes."* For bug fixes, reproduce the failure with a new test first. | [`snippets.ts:257, 359-369`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/prompts/snippets.ts#L359-L369) |
+| Industry | **Codex CLI** | **Prompt:** *"Validating your work"*: use the codebase's tests; start as specific as possible to the code you changed, then broaden; don't fix unrelated bugs. | [`default.md:149-157`](https://github.com/openai/codex/blob/818bde09950cab06c18808f540037aa8e5d616a5/codex-rs/protocol/src/prompts/base_instructions/default.md#L149-L157) |
+| Industry | **opencode** | **Prompt, one per model family:** `meta.txt` says to verify *"through execution whenever possible and reasonable"*; `trinity.txt` says to verify with tests and run lint and typecheck when done; `gpt-astra.txt` warns against tests for low-impact changes. | [`meta.txt:16-17`](https://github.com/anomalyco/opencode/blob/a5518690fc5cfd57ea2abfb636ef03a9ce67fc51/packages/core/src/plugin/system-prompt/meta.txt#L16-L17); [`trinity.txt:76-77`](https://github.com/anomalyco/opencode/blob/a5518690fc5cfd57ea2abfb636ef03a9ce67fc51/packages/core/src/plugin/system-prompt/trinity.txt#L76-L77); [`gpt-astra.txt:39-40`](https://github.com/anomalyco/opencode/blob/a5518690fc5cfd57ea2abfb636ef03a9ce67fc51/packages/core/src/plugin/system-prompt/gpt-astra.txt#L39-L40) |
+| Industry | **OpenHands** | **Prompt:** a problem-solving workflow: explore, analyze, then *"For bug fixes: Create tests to verify issues before implementing fixes"*, implement, and *"VERIFICATION: ... test your implementation thoroughly, including edge cases."* | [`sections/static.py:246-262`](https://github.com/OpenHands/software-agent-sdk/blob/84ae396c3cfc3ecb35d7388547f10167b477771d/openhands-sdk/openhands/sdk/context/prompts/sections/static.py#L246-L262) |
+| Industry | **Aider** | **The loop forces it.** With `auto_test` and a test command, it runs the tests after every edit; on failure it asks *"Attempt to fix test errors?"* and sends the errors back to the model as the next message, at most 3 times. The same for the linter. | [`base_coder.py:100-101, 939-943, 1599-1625`](https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/coders/base_coder.py#L1599-L1625) |
+| Closed (docs) | **Claude Code** | Three ways, all documented: **in the prompt** (*"run the auth tests after, and keep going until they pass"*; *"Claude decides for itself when it's satisfied"*), **as a goal** (*"a separate model checks against the conversation after every turn"*), or **as a Stop hook** (your script runs when Claude tries to end its turn, and sends it back if the check fails). Plus: ask for the command and its output as evidence. | [Best practices, "Give Claude a check to run"](https://code.claude.com/docs/en/best-practices) (public docs, read 2026-11-26) |
+
+**What they agree on → what we follow:** verifying is mostly a **prompt instruction**: run the tests after changing code, and don't consider the work done until they pass. Every industry agent's prompt says so in some form.
+
+**Where they differ:** whether the harness also **forces** the check (Aider's auto-test, Claude Code's Stop hook) or hands it to **a second model** (learn-claude-code's goal loop, Claude Code's `/goal`), and how strongly the prompt insists, which in opencode even changes per model.
+
+**Cross-check with a survey.** The *Harness Engineering* survey ([Barbaste et al., July 2026](https://arxiv.org/abs/2609.00006)) names the second model and the forced check as the **"outer verification loop"** pattern (p.13): harness features *"whose only purpose is to close an outer loop around the inner one."* And on limits, Recommendation 18 (p.70): *"do ship the cheap caps, which cost a dozen lines"*, which is what our step limit is.
+
+### 3. Sub-steps and decisions, derived top-down
+
+**The options, by who decides the work is done:**
+
+| Option | Who | Fits us? |
+|---|---|---|
+| **A. The prompt asks the model to verify** | Codex, Gemini CLI, opencode, OpenHands, mini-swe-agent, Claude Code (the default) | Decision A |
+| **B. The loop forces the check** (run the tests after every edit, send failures back) | Aider (`auto_test`), Claude Code (Stop hook) | Decision A |
+| **C. A second model judges "done"** | learn-claude-code (goal loop), Claude Code (`/goal`) | **Dropped:** a second model call per turn; the roadmap lists "goal check" for later. |
+| **D. Nothing: the model decides on its own** | ghuntley, learn-claude-code's basic agent | **The as-is:** what our agent does today, and the "before" to compare against |
+
+**Filter by this project's level of complexity:**
+
+| Choice | Result |
+|---|---|
+| The check | **Settled:** `pytest`, run through `run_command`, so each run still asks for your yes. |
+| Room to repeat | **Settled, Claude's judgment:** raise the step limit from 5 to 10 for this step's runs. A minimal fix cycle already uses all 5 (run tests, read, edit, run tests, answer), and step 6's run hit the limit. It stays a cap, as Recommendation 18 advises. |
+| Evidence in the final answer | **Settled:** the instruction asks the model to say which test command it ran and what it showed, as Claude Code's docs advise. |
+| "Fixing" the test instead of the code | **Decision B** |
+
+**Decisions (for you):**
+
+- **Decision A: ask the model to verify (prompt), or make the loop force it?** My lean: **the prompt, only.** It's what every industry agent does first, it's one added line in `build_system_prompt`, and it's the cleanest experiment for your "asked vs forced" question: we'll see whether the model actually follows the instruction. Forcing it (Aider-style) is the fallback if it doesn't, and a natural Phase 2 comparison.
+- **Decision B: guard against the agent editing the test instead of the code, or just watch for it?** My lean: **watch, don't guard.** A rule in the prompt ("never edit tests") would hide the very behaviour your fix-quality idea wants to study. Every edit already goes through your approval prompt, so you'd see a test edit before it happens, and the cell checks afterwards whether the test file changed.
+
+**Steps:**
+1. **As-is** (this step changes the prompt, so the "before" is worth seeing): with today's prompt, give the agent a tiny project with a bug and its failing test, and ask *"The tests fail. Fix the bug."* You answer the prompts. Record whether it re-runs the tests after its edit, or stops at "I fixed it".
+2. **Build:** `build_system_prompt` becomes the old version plus one instruction: after changing code, run the tests; if they fail, read the output, fix, and run them again; finish only when they pass, and report the command and its result.
+3. **Test:** the same project and the same request, with the new prompt and a 10-step limit. Then check that the test file is unchanged and the tests pass.
+
+The test in step 3 is also **Phase 1's end-to-end demo**: a small project with a failing test; the agent finds the bug, fixes it, runs the tests to confirm, and asks before anything risky.
+
+### 4. Coverage check: the breakdown against the steps
+
+| Part of the problem | Covered by |
+|---|---|
+| A check to run | Already built (`run_command`); used in steps 1 and 3 |
+| A reason to run it | **Step 2:** the prompt instruction (decision A) |
+| Room to repeat | **Step 3:** a 10-step limit |
+| A way to stop | The model stops when the tests pass; the step limit is the backstop |
+| Who decides "done": the model | **Steps 2–3** |
+| Who decides "done": the harness | **Not now** (decision A); the fallback if the model ignores the instruction |
+| Who decides "done": a second model | **Dropped** for Phase 1 (the roadmap's "goal check", later) |
+| Editing the test instead of the code | **Watched** (decision B): your approval prompt plus a check that the test file is unchanged |
+
+### 5. Done when
+
+- With the new prompt, asked to fix the failing test, the agent runs the tests, fixes the code, **runs them again**, and finishes only when they pass, reporting the command and its output.
+- The test file is unchanged.
+- We have a before-and-after: what the agent did without the instruction (step 1) vs with it (step 3).

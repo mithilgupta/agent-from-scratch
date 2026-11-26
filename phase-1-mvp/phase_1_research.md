@@ -600,7 +600,9 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 
 **Steps:**
 1. **As-is** (this step changes the prompt, so the "before" is worth seeing): with today's prompt, give the agent a tiny project with a bug and its failing test, and ask *"The tests fail. Fix the bug."* You answer the prompts. Record whether it re-runs the tests after its edit, or stops at "I fixed it".
-2. **Build:** `build_system_prompt` becomes the old version plus one instruction: after changing code, run the tests; if they fail, read the output, fix, and run them again; finish only when they pass, and report the command and its result.
+2. **Build:** `build_system_prompt` becomes the old version plus a **two-part instruction** (changed 2026-11-26 after the as-is run, see below):
+   > When asked to fix a bug or a failing test, investigate with your tools instead of asking the user for details you can find yourself: run the tests to see what fails, then read the relevant code.
+   > After changing code, run the tests again. If they still fail, read the output, fix, and run them again. Finish only when they pass, and say which command you ran and what it showed.
 3. **Test:** the same project and the same request, with the new prompt and a 10-step limit. Then check that the test file is unchanged and the tests pass.
 
 The test in step 3 is also **Phase 1's end-to-end demo**: a small project with a failing test; the agent finds the bug, fixes it, runs the tests to confirm, and asks before anything risky.
@@ -610,7 +612,8 @@ The test in step 3 is also **Phase 1's end-to-end demo**: a small project with a
 | Part of the problem | Covered by |
 |---|---|
 | A check to run | Already built (`run_command`); used in steps 1 and 3 |
-| A reason to run it | **Step 2:** the prompt instruction (decision A) |
+| A reason to run it | **Step 2:** the prompt instruction (decision A), second part |
+| A reason to look at all (found in the as-is run) | **Step 2:** the prompt instruction, first part |
 | Room to repeat | **Step 3:** a 10-step limit |
 | A way to stop | The model stops when the tests pass; the step limit is the backstop |
 | Who decides "done": the model | **Steps 2–3** |
@@ -623,3 +626,12 @@ The test in step 3 is also **Phase 1's end-to-end demo**: a small project with a
 - With the new prompt, asked to fix the failing test, the agent runs the tests, fixes the code, **runs them again**, and finishes only when they pass, reporting the command and its output.
 - The test file is unchanged.
 - We have a before-and-after: what the agent did without the instruction (step 1) vs with it (step 3).
+
+### As-is result and plan change (2026-11-26)
+
+With today's prompt, asked *"The tests fail. Fix the bug."*, the model **used no tools at all.** It answered: *"I'd be happy to help fix the bug, but I need more information about what's failing. Could you please share: 1. What specific tests are failing? 2. What error messages are you seeing?..."* The tests still failed.
+
+So the gap isn't only at the end of the loop (re-running the tests after a fix); it's at the start: without an instruction to investigate, the model behaves like a chat assistant and asks for details it could find with one command. Today's prompt calls it *"a helpful coding assistant"* and says *"If you don't need a tool, just answer normally"*; nothing says "investigate yourself". (In step 6 it ran the tests only because the user said *"Run the tests and tell me what fails."*)
+
+The industry prompts cover the start as well: Gemini CLI (*"Prioritize empirical reproduction of reported issues to confirm the failure state"*), mini-swe-agent (reproduce, then fix, then verify), OpenHands (*"For bug fixes: Create tests to verify issues before implementing fixes"*). The instruction in step 2 above became two parts, agreed with the user on 2026-11-26: investigate first, then verify.
+

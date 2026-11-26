@@ -71,7 +71,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 | 2 | List and find files | Tools | The agent has to explore a project before it can change it | ✅ |
 | 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ✅ |
 | 4 | Write and edit files | Tools | The moment the agent can actually change code | ✅ (edit only; creating files deferred) |
-| 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ⬜ |
+| 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ✅ |
 | 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ⬜ |
 | 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent | ⬜ |
 
@@ -266,7 +266,7 @@ reads as data, never as instructions.
 
 | Component | What it adds | Scope | Status |
 |---|---|---|---|
-| Approval prompt | Ask "allow this?" before risky actions | Core | ⬜ |
+| Approval prompt | Ask "allow this?" before risky actions | Core | ✅ |
 | Permission rules | Allow / ask / deny rules per tool and pattern | Later | ⬜ |
 | Permission modes | Switch between ask-everything, accept-edits, read-only and auto | Skip | ⬜ |
 | Automatic risk check | A model judges each action and blocks only risky ones | Later | ⬜ |

@@ -96,6 +96,12 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
     learner, what would I want to see or run before this feature is added
     or changed? Explanations go in Claude's message, not extra markdown
     cells. We're not writing a book.
+  - **Every build cell opens with an "Execution" header** (explicit
+    instruction, 2026-11-26; the user's own idea): the cell's title line,
+    then `# Execution:` and 2–4 numbered comment lines, each naming one
+    concrete thing the cell adds or changes (a function, a list, a changed
+    line in `ask()`). It's the meat of the cell at a glance. Model: cells
+    3a, 4a and 5a in `phase-1-mvp/phase_1_agent.ipynb`.
   - **Each roadmap step has 1–3 sub-steps: as few as it needs** (explicit
     instruction, 2026-10-31). One is fine, e.g. a step that only adds a
     tool. The user is a practicing data scientist: a sub-step is a

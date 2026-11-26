@@ -73,7 +73,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 | 4 | Write and edit files | Tools | The moment the agent can actually change code | ✅ (edit only; creating files deferred) |
 | 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ✅ |
 | 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ✅ |
-| 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent | ⬜ |
+| 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent | ✅ |
 
 **MVP done when:** given a small project with a failing test, the agent finds
 the bug, fixes it, runs the tests to confirm, and asks before anything risky.
@@ -176,7 +176,7 @@ checking your own work.
 | Step limit | A cap on iterations so a confused model can't loop forever | Core | ✅ |
 | To-do list | The model writes a checklist and ticks items off as it goes | Core | ⬜ |
 | Plan mode | Explore read-only first, propose a plan, edit only after approval | Core | ⬜ |
-| Verify loop | Run tests or lint after a change and fix what fails | Core | ⬜ |
+| Verify loop | Run tests or lint after a change and fix what fails | Core | ✅ |
 | Goal check | A separate check decides whether the task is truly done | Later | ⬜ |
 | Loop detection | Notice the agent repeating itself and stop it | Later | ⬜ |
 | Retries | Recover from failed model calls without losing progress | Skip | ⬜ |

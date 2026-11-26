@@ -635,3 +635,19 @@ So the gap isn't only at the end of the loop (re-running the tests after a fix);
 
 The industry prompts cover the start as well: Gemini CLI (*"Prioritize empirical reproduction of reported issues to confirm the failure state"*), mini-swe-agent (reproduce, then fix, then verify), OpenHands (*"For bug fixes: Create tests to verify issues before implementing fixes"*). The instruction in step 2 above became two parts, agreed with the user on 2026-11-26: investigate first, then verify.
 
+
+### Result (live run, 2026-11-26)
+
+Same buggy project, same request (*"The tests fail. Fix the bug."*), same 10-step limit; only the prompt differs.
+
+| | As-is (today's prompt) | With the two-part instruction |
+|---|---|---|
+| Tool calls | **None**: it asked the user for details | `run_command('python -m pytest')` → `read_file` → `edit_file` → **`run_command('python -m pytest')` again** |
+| Test file unchanged (checked by our code) | True | **True**: it fixed the code, not the test |
+| Tests pass now (checked by our code) | False | **True** |
+| Final answer | A list of questions | Names the bug (`add` subtracted), the fix, and the command it ran |
+
+- **The verify loop is a prompt instruction.** Two sentences turned a model that asked questions into one that ran the full cycle: see the failure, read, fix, confirm. No new tool, no new loop code. This answers the roadmap's open question, and matches every industry agent read above.
+- **Phase 1's goal is met in this run:** given a small project with a failing test, the agent found the bug, fixed it, ran the tests to confirm, and asked before each risky action (three approvals: two test runs, one edit).
+- **Evidence only half given:** asked to *"say which command you ran and what it showed"*, it named the command but only said the tests "passed", without quoting the output (e.g. "2 passed"). The claim was true, as our own check confirms; this is why the cell checks with code rather than trusting the answer.
+- One run per prompt, so these are observations, not measurements; asked-vs-forced verification is a natural Phase 2 comparison.

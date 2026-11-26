@@ -137,7 +137,7 @@ One sub-step, because there's one feature: the check. Running it against the mod
 
 ## Step 4: Write and edit files
 
-*Draft, 2026-11-24. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+*Agreed 2026-11-26: decision A find-and-replace, decision B no create/overwrite tool for now.*
 
 ### 1. What we're doing and why
 
@@ -230,7 +230,7 @@ Source code read on 2026-11-24 from local clones, links pinned to the commit rea
 | Stay inside the project | Every agent with file tools checks paths | **Settled:** call `inside_project` from step 3, as noted in its coverage check. |
 | A separate tool to create or overwrite files? | Most have one; ghuntley and OpenHands handle creation differently | **Decision B** |
 
-**Decisions (for you):**
+**Decisions (agreed 2026-11-26, both as Claude leaned):**
 
 - **Decision A: find-and-replace, or send the whole file?** My lean: **find-and-replace.** It's what almost every agent with tool calls uses, Claude Code included, and our model (Qwen3-Coder, 480B) is far larger and newer than the 32B Qwen in Aider's comparison. That comparison is a good warning, though, so "whole file vs find-and-replace on our model" goes on the experiment list for the Phase 2 benchmark.
 - **Decision B: also a tool to create or overwrite whole files?** My lean: **not now.** The Phase 1 goal only needs changing an existing line, and a whole-file write is easy to add later as its own tool when something needs it (e.g. the agent writing a new test).

@@ -70,7 +70,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 | 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite | ✅ |
 | 2 | List and find files | Tools | The agent has to explore a project before it can change it | ✅ |
 | 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ✅ |
-| 4 | Write and edit files | Tools | The moment the agent can actually change code | ⬜ |
+| 4 | Write and edit files | Tools | The moment the agent can actually change code | ✅ (edit only; creating files deferred) |
 | 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ⬜ |
 | 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ⬜ |
 | 7 | Verify loop | Control loop | Run the tests, fix what fails, repeat: this is what makes it a *coding* agent | ⬜ |
@@ -96,6 +96,21 @@ steps; run once step 10 exists):
 |---|---|---|
 | Example line vs no example | Does showing one concrete tool-call line in the prompt make the model follow the format more reliably than a generic pattern alone? | Phase 1, step 1 (decision 2) |
 | Tool description vs feedback in the result | When the model searches wrongly, what corrects it more often: a clearer tool description, or a note in the result saying what to try? In one run, the description alone didn't stop a top-folder-only search; the note in the empty result did. | Phase 1, step 2 (2b) |
+| Whole file vs find-and-replace | On our model, which edit format produces more successful fixes and fewer malformed edits? In Aider's benchmark, Qwen2.5-Coder-32B solved 16.4% of tasks sending whole files vs 8.0% with find-and-replace. | Phase 1, step 4 (decision A) |
+
+**An idea to explore here: how good are the agent's fixes, and how would we
+know?** (Noted 2026-11-26, from Phase 1's write-and-edit-files step; not
+planned yet.) A fix can go wrong in three different ways, each measured
+differently:
+
+| Question | Example failures | Possible measure |
+|---|---|---|
+| Did the edit land as intended? (mechanics) | Old text not found, matched twice | Count the edit tool's errors per run |
+| Is it the right fix? (quality) | Fixes the symptom, breaks something else, or edits the test instead of the code | Tests the agent never sees |
+| Did it do anything unwanted? (safety) | Edits outside the task, risky commands | The run log; checks like "did it modify a test file?" |
+
+To research when this phase starts: what goes wrong with coding agents'
+fixes in practice, and how existing benchmarks measure it.
 
 ### Phase 3: Make it robust and well-informed
 
@@ -181,7 +196,7 @@ information; keeping outputs a manageable size.
 |---|---|---|---|
 | Read file | See a file's contents | Core | ✅ |
 | List and find files | Explore a project's structure | Core | ✅ |
-| Write and edit files | Create files; replace an exact snippet, failing clearly if it isn't found | Core | ⬜ |
+| Write and edit files | Create files; replace an exact snippet, failing clearly if it isn't found | Core | ✅ edit; ⬜ create |
 | Search contents | Find code by pattern across a project | Later | ⬜ |
 | Run shell commands | Run tests, scripts and git; read the output | Core | ⬜ |
 | Web fetch and search | Read docs and look up errors | Later | ⬜ |

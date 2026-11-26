@@ -259,3 +259,118 @@ Source code read on 2026-11-24 from local clones, links pinned to the commit rea
 - Asked for a small change to a file in `sandbox/`, the agent reads the file, calls `edit_file`, and the file on disk changes.
 - `edit_file` refuses missing text, repeated text and a path outside the folder, each with an error that says what to do.
 - Adding the tool needed nothing but `register()`.
+
+---
+
+## Step 5: Approval prompt
+
+*Draft, 2026-11-26. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+
+### 1. What we're doing and why
+
+**The goal in one sentence:** before the agent does anything that changes something, show you the action and wait for your yes or no. This is the "asks before anything risky" part of Phase 1's goal, and the roadmap puts it before terminal commands on purpose ([`ROADMAP.md:74`](../ROADMAP.md)): *"Ask before risky actions, needed before shell access."* Once the agent can run commands, a command can get around the folder check, so your yes or no becomes the only guard.
+
+Today nothing asks. In the agent loop (`ask()`, section 1f of the notebook), a tool call goes straight to `result = run_tool(name, args)`. The edit tool's live run (section 4a) showed it: the model asked for `edit_file`, and the file changed without anyone being asked.
+
+**The problem broken down (MECE).**
+
+*By what a tool does:*
+
+| Kind of tool | Our tools | Live today? | Ask? |
+|---|---|---|---|
+| **Only looks** | `find_files`, `read_file` | ✅ | No: nothing changes |
+| **Changes files** | `edit_file` | ✅ | The question of this step |
+| **Runs commands** | The terminal-command tool, the next roadmap step | ❌ | Yes, when it's built: it reuses this step's prompt |
+
+*By your answer:*
+
+| Your answer | What should happen |
+|---|---|
+| **Yes** | The tool runs, as today |
+| **No** | The tool doesn't run, and the model has to be told, or it will think the change happened |
+
+### 2. Evidence: how real agents do it
+
+Source code read on 2026-11-26 from local clones, links pinned to the commit read. **This is a snapshot:** these repos change daily.
+
+**By question:**
+
+| Question | What real agents do |
+|---|---|
+| What gets asked? | **Tools that only look are never asked:** Claude Code's permission table says read-only tools need no approval; Gemini CLI marks read, search and fetch tools as read-only. **Edits split the agents.** Asked by default: Gemini CLI, Claude Code, and opencode (whose fallback, when no rule matches, is to ask). Not asked inside the project: Codex (auto-approved when the patch stays in its writable folders, which its OS sandbox enforces), learn-claude-code (asks only when a rule flags danger, such as writing outside the workspace), Aider (applies edits to files you added, commits each one to git, and offers `/undo`), and OpenHands (never confirms by default; it runs in a container). **Commands are asked for almost everywhere:** Claude Code, mini-swe-agent, Aider (*"Run shell command?"*), Codex depending on its policy. |
+| What can you answer? | **Just yes or no:** learn-claude-code (`Allow? [y/N]`). **No, with a reason for the model:** mini-swe-agent (Enter confirms; anything you type rejects, and becomes the message), opencode, Claude Code. **Yes for the rest of the session:** Codex, Gemini CLI, opencode, Claude Code (for edits, until the session ends). **Stop everything:** Codex's "Abort", and Claude Code stops the turn on a "No" without a comment. |
+| What does the model get on "no"? | **A tool result saying it was refused**, so it knows the action didn't happen: *"Permission denied."* (learn-claude-code), *"Action rejected: ..."* (OpenHands), *"Commands not executed. The user rejected your commands with the following message: ..."* (mini-swe-agent), *"User denied execution."* (Gemini CLI). opencode and Claude Code pass your comment on as the reason. Codex distinguishes "denied, try something else" from "abort, wait for the user". |
+| Can asking be turned off? | **Yes, as "modes", in most industry agents:** Gemini CLI (default, autoEdit, yolo, plan), Claude Code (six modes, from asking for most actions to skipping prompts), mini-swe-agent (human, confirm, yolo), Codex (approval policies, including "never"). OpenHands has a third way: `ConfirmRisky` asks only when **the model's own rating** of an action's risk is high enough. |
+| Where does the check sit? | **Between "the model asked for a tool" and "run it".** learn-claude-code describes it as *"Only one line added to the agent loop: if not check_permission(block): continue"*. |
+
+**One agent at a time:**
+
+| Tier | Agent | Approval | Source |
+|---|---|---|---|
+| Small scale | **learn-claude-code** | A whole lesson (`s03_permission`): three gates before a tool runs: a hard deny list for commands, rules (writing outside the workspace, destructive commands), and `input("Allow? [y/N]")` when a rule matches. A refusal returns *"Permission denied."* to the model. | [`s03_permission/code.py:1-23, 176-199, 235-241`](https://github.com/shareAI-lab/learn-claude-code/blob/7226f555d48900076eba126acf37c9ed5f002b5d/s03_permission/code.py#L176-L199) |
+| Small scale | **ghuntley** | **None:** tools run as soon as the model asks. | (no approval code found) |
+| Small scale | **mini-swe-agent** | Modes `human`, `confirm` (the default) and `yolo`. In confirm mode, Enter runs the command; typing anything else rejects it and sends *"Commands not executed. The user rejected your commands with the following message: ..."* | [`agents/interactive.py:5-6, 25, 162-182`](https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/agents/interactive.py#L162-L182) |
+| Industry | **Gemini CLI** | Policy rules decide per tool: `replace` and `write_file` default to **ask**, and are allowed outright in `autoEdit` mode. The answers: proceed once, proceed always (several variants), modify in an editor, or cancel. On cancel: *"User denied execution."* | [`policies/write.toml:30-40`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/policy/policies/write.toml#L30-L40); [`tools.ts:1109-1148`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/tools/tools.ts#L1109-L1148); [`scheduler.ts:766-776`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/scheduler/scheduler.ts#L766-L776); [`types.ts:48-53`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/policy/types.ts#L48-L53) |
+| Industry | **Codex CLI** | Approval policies: `UnlessTrusted`, `OnRequest` (*"The model decides when to ask"*), `Granular`, `Never`. Edits inside its writable folders are auto-approved, because its OS sandbox backs them. Your answer: approved, approved for the session, **denied** (*"continue the session and try something else"*) or **abort** (*"not do anything until the user's next command"*). | [`protocol.rs:1185-1207, 4573-4607`](https://github.com/openai/codex/blob/818bde09950cab06c18808f540037aa8e5d616a5/codex-rs/protocol/src/protocol.rs#L4573-L4607); [`safety.rs:100-123`](https://github.com/openai/codex/blob/818bde09950cab06c18808f540037aa8e5d616a5/codex-rs/core/src/safety.rs#L100-L123) |
+| Industry | **opencode** | Rules say allow, ask or deny per action; with no matching rule, it **asks**. Your answer: once, always, or reject. Reject with a message turns your message into the error the model sees; without one, a plain "declined". | [`permission.ts:59-67, 86-95, 298-330`](https://github.com/anomalyco/opencode/blob/a5518690fc5cfd57ea2abfb636ef03a9ce67fc51/packages/core/src/permission.ts#L298-L330) |
+| Industry | **OpenHands** | **Never confirms by default** (`NeverConfirm`; the container is the safety net). Options: `AlwaysConfirm`, or `ConfirmRisky`, which asks only above a risk threshold, where the risk is a `security_risk` field **the model fills in itself** (*"The LLM's assessment of the safety risk of this action"*). A rejection reaches the model as *"Action rejected: ..."*. | [`confirmation_policy.py:27-60`](https://github.com/OpenHands/software-agent-sdk/blob/84ae396c3cfc3ecb35d7388547f10167b477771d/openhands-sdk/openhands/sdk/security/confirmation_policy.py#L27-L60); [`state.py:180`](https://github.com/OpenHands/software-agent-sdk/blob/84ae396c3cfc3ecb35d7388547f10167b477771d/openhands-sdk/openhands/sdk/conversation/state.py#L180); [`tool.py:893-897`](https://github.com/OpenHands/software-agent-sdk/blob/84ae396c3cfc3ecb35d7388547f10167b477771d/openhands-sdk/openhands/sdk/tool/tool.py#L893-L897) |
+| Industry | **Aider** | **Edits to files you added are applied without asking,** each one committed to git, with `/undo` to revert. It asks before creating a file (*"Create new file?"*), editing a file you didn't add, and running shell commands (*"Run shell command?"*). | [`base_coder.py:2207, 2226, 2450-2460`](https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/coders/base_coder.py#L2191-L2238); [`commands.py:553`](https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/commands.py#L553) |
+| Closed (docs) | **Claude Code** | Read-only tools: no approval. File edits: approval required, and *"Yes, and don't ask again"* lasts *"Until session end"*. Bash: approval required, and "don't ask again" is saved per repository. On **No**: *"Claude Code sends your comment to Claude as the reason for the denial, and Claude continues working. If you select No without a comment ... Claude Code stops the turn."* Six permission modes, from `default` to `bypassPermissions`. | [Permissions docs](https://code.claude.com/docs/en/permissions) (public docs, read 2026-11-26) |
+
+**What they agree on → what we follow:** tools that only look are never asked; a refusal goes back to the model as a tool result, so it knows the action didn't happen; and the check sits in the loop, between the model's request and running the tool.
+
+**Where they differ:** whether edits inside the project are asked at all (agents with an OS sandbox or git undo skip it), what you can answer beyond yes and no, and whether asking can be switched off.
+
+**Cross-check with a survey.** The *Harness Engineering* survey ([Barbaste et al., July 2026](https://arxiv.org/abs/2609.00006)), Recommendation 9 (p.69): for a developer tool, *"implement a three-mode approval system (PLAN / DEFAULT / YOLO) with permission-scope patterns."* Modes are dropped below as polish; the survey's own evidence is the agents in the table.
+
+### 3. Sub-steps and decisions, derived top-down
+
+**The options, by what gets asked:**
+
+| Option | Who | Fits us? |
+|---|---|---|
+| **A. Ask before every tool call** | Nobody | **Dropped:** asking before every file read is noise. |
+| **B. Ask before every tool that changes something** | Gemini CLI, Claude Code, opencode (fallback) | Decision A |
+| **C. Ask only when a rule flags danger** | learn-claude-code, Codex (inside the sandbox), Aider (files you added) | Decision A |
+| **D. Ask when the model rates its own action as risky** | OpenHands (`ConfirmRisky`) | **Dropped for now:** interesting for AI safety (the model judging its own risk), noted for later, not Phase 1. |
+
+**Filter by this project's level of complexity:**
+
+| Choice | Result |
+|---|---|
+| Read-only tools ask? | **Settled:** no, as every agent agrees. |
+| Where the check sits | **Settled:** one check in `ask()`, between parsing the tool call and `run_tool`, as learn-claude-code does. |
+| How the loop knows which tools change things | **Settled, Claude's judgment:** a set of tool names in the notebook, `RISKY_TOOLS = {"edit_file"}`; the terminal tool joins it when it's built. (Gemini CLI tags each tool with a kind; a set is the minimal version.) |
+| "Yes for the rest of the session" and modes (auto-edit, yolo) | **Dropped:** convenience. The roadmap lists permission modes as skip and permission rules as later. |
+| "Abort" (stop the whole turn) | **Dropped:** a refusal goes back to the model, which decides what to do next. |
+| What you can answer | **Decision B** |
+
+**Decisions (for you):**
+
+- **Decision A: ask before every edit, or only when a rule flags danger?** My lean: **every edit** (option B). Phase 1's goal says the agent "asks before anything risky", and the agents that skip asking inside the project (Codex, Aider, OpenHands) do so because they have an OS sandbox, git undo, or a container behind them. We have none of those.
+- **Decision B: what can you answer?** My lean: **mini-swe-agent's single prompt.** Press Enter (or type `y`) to allow; type anything else to refuse, and what you typed goes to the model as the reason, e.g. *"no, change greet instead"*. One prompt gives both a plain no and a no-with-guidance, which is what Claude Code and opencode offer too. The alternative is learn-claude-code's plain `[y/N]`.
+
+**Sub-step** (one feature, so one sub-step):
+
+| # | Sub-step | Based on |
+|---|---|---|
+| 5a | **Build the approval prompt and test it.** `RISKY_TOOLS`, an `approve(name, args)` function that shows the tool call and reads your answer with `input()`, and a new `ask()`: section 1f's version plus the check before `run_tool` (changed lines marked). Then run the edit request from section 4a twice, and **you answer the prompt** in the notebook: once yes (the file changes), once with a reason (the file stays the same, and we see what the model does with your reason). A read along the way must not ask. | learn-claude-code's "one line in the loop"; mini-swe-agent's prompt; the "settled" rows above |
+
+**No as-is cell:** the "before" is already in the notebook. Section 4a's live run shows the model editing without being asked, and section 1f has the `ask()` being changed. (Claude's judgment, to keep the cell count down.)
+
+### 4. Coverage check: the breakdown against the sub-step
+
+| Part of the problem | Covered by |
+|---|---|
+| Tools that only look | **5a:** not in `RISKY_TOOLS`, so never asked; checked during the test |
+| Tools that change files | **5a:** `edit_file` is asked about |
+| Tools that run commands | **Deferred** to the terminal-command step: its tool joins `RISKY_TOOLS` |
+| Your "yes" | **5a:** the tool runs |
+| Your "no" | **5a:** the tool doesn't run; the model gets a refusal with your reason |
+| Session-wide yes, modes, rules, model-rated risk | **Dropped** for Phase 1 (see the filter); model-rated risk noted for later |
+
+### 5. Done when
+
+- An edit stops and shows you the tool call; your yes applies it.
+- Typing a reason refuses it: the file is unchanged, and the model receives your reason.
+- Reading a file never prompts.

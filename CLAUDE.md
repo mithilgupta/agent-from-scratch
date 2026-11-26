@@ -128,7 +128,11 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
 - The user may have the notebook open in Jupyter, which overwrites changes
   on disk when it autosaves. After editing a notebook, tell the user to
   reload it from disk (File → Reload Notebook from Disk) before running it.
-- Commit or push only when asked.
+- Commit or push only when asked, with one standing exception (explicit
+  instruction, 2026-11-26): **every time `phase_N_research.md` changes,
+  commit and push it right away** (with the notebook if its summary cell
+  changed too), because the user reads the research only in the GitHub UI.
+  Check the notebook for private paths or keys before pushing, as always.
 
 Environment: notebooks use the `agents` Jupyter kernel; run code and tests
 with `/opt/anaconda3/envs/agents/bin/python` (the system `python3` is 3.9 and

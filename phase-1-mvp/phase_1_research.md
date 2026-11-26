@@ -264,7 +264,7 @@ Source code read on 2026-11-24 from local clones, links pinned to the commit rea
 
 ## Step 5: Approval prompt
 
-*Draft, 2026-11-26. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+*Agreed 2026-11-26: decision A ask before every edit, decision B Enter to allow or type a reason to refuse.*
 
 ### 1. What we're doing and why
 
@@ -345,7 +345,7 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 | "Abort" (stop the whole turn) | **Dropped:** a refusal goes back to the model, which decides what to do next. |
 | What you can answer | **Decision B** |
 
-**Decisions (for you):**
+**Decisions (agreed 2026-11-26, both as Claude leaned):**
 
 - **Decision A: ask before every edit, or only when a rule flags danger?** My lean: **every edit** (option B). Phase 1's goal says the agent "asks before anything risky", and the agents that skip asking inside the project (Codex, Aider, OpenHands) do so because they have an OS sandbox, git undo, or a container behind them. We have none of those.
 - **Decision B: what can you answer?** My lean: **mini-swe-agent's single prompt.** Press Enter (or type `y`) to allow; type anything else to refuse, and what you typed goes to the model as the reason, e.g. *"no, change greet instead"*. One prompt gives both a plain no and a no-with-guidance, which is what Claude Code and opencode offer too. The alternative is learn-claude-code's plain `[y/N]`.

@@ -11,7 +11,7 @@ agent_v0 (frozen) ──import──► Phase 1 notebook(s) ──refactor at en
                               build and experiment                     clean prod code
 ```
 
-Each phase folder holds three things:
+Each phase folder holds four things:
 
 ```
 phase-0-foundation/
@@ -21,6 +21,7 @@ phase-0-foundation/
 phase-1-mvp/
 ├── phase_1_README.md
 ├── phase_1_agent.ipynb  ← imports agent_v0 only
+├── phase_1_research.md  ← every step's full game plan and evidence (from step 3 on)
 └── agent_v1/            ← written at the end of Phase 1, then frozen
 ```
 
@@ -28,8 +29,10 @@ Notebooks are named `phase_N_agent.ipynb`. If a phase needs more than one,
 add a suffix: `phase_N_agent_2.ipynb`, or a short topic name.
 
 **The notebook is the lab; the README and `agent_vN/` are what comes out of
-it.** Everything made while working lives in the notebook: game plans,
-evidence, code, observations and dead ends. The **README** is the phase's
+it.** The code, observations and dead ends live in the notebook, with a
+short summary of each step's plan. The full plans and evidence live in one
+research file per phase (`phase_N_research.md`), so the notebook stays easy
+to read. The **README** is the phase's
 final write-up for someone who wasn't there: what was built, the decisions
 and why, with links to the evidence. It's written once, after the notebook
 works end to end and `agent_vN/` has been refactored, so it describes the
@@ -48,20 +51,33 @@ the phase README, so it scales as phases grow.
    `read_file`, then write a new `ask()` that uses the tool registry. The
    notebook's version becomes v1's `ask()`.
 
-3. **Every step starts with a game plan, agreed before any code.** The first
-   cell of each roadmap step's section is a markdown "game plan", in this
-   order, like a design doc:
-   1. **What we're doing and why:** the problem statement, grounded in our
-      own code (file and line) and the roadmap.
+3. **Every step starts with a game plan, agreed before any code.** The full
+   plan is a section of the phase's research file (`## Step N: <name>` in
+   `phase_N_research.md`); the first cell of the step's notebook section is
+   a short summary of it (goal, breakdown, what was chosen and dropped,
+   done when) with a link. Scale the plan to the step: a step that adds one
+   small function needs less than a big design choice. The full plan, in
+   this order, like a design doc:
+   1. **What we're doing and why**, in two parts:
+      - **The goal in one sentence**, at a high level.
+      - **The problem broken down (MECE)**: small tables that split the
+        problem into parts that don't overlap and leave nothing out (for
+        example, by action: read or write), each tied to our own code
+        (file and line) and marked as live today or not yet. This keeps
+        the step on what matters, not the minutiae.
    2. **Evidence: how real agents do it:** the literature review (below).
-   3. **Sub-steps (proposed):** derived from the problem and the evidence,
-      **1–3 per step, as few as it needs** (a step that only adds a tool
-      can be one), each a meaningful chunk built and run in one
-      go (not one sub-step per function), with a **"Based on"** column
-      naming the evidence each follows. Anything without a source is
-      labeled as judgment.
-   4. **Decisions:** design choices the evidence doesn't settle, for the
-      user to make.
+   3. **Sub-steps and decisions, derived top-down with the reasoning
+      shown:** the options the evidence gives → which are dropped as too
+      complex for this project, and why → what's left is either settled
+      (the agents agree), a **decision** for the user (they differ), or a
+      **sub-step**. **1–3 sub-steps per step, as few as it needs** (a step
+      that only adds a tool can be one), each a meaningful chunk built
+      and run in one go (not one sub-step per function), with a
+      **"Based on"** column naming the evidence each follows. Anything
+      without a source is labeled as judgment.
+   4. **Coverage check:** each part of the breakdown, read against the
+      sub-steps: which sub-step covers it, or why it's deferred or
+      dropped.
    5. **Done when:** the acceptance criteria.
 
    **The evidence table** (in every step where it applies): a table
@@ -84,12 +100,13 @@ the phase README, so it scales as phases grow.
      their public docs, labeled as such. Then **what they agree on** (and
      so what we follow) and **where they differ** (and why). This is the
      part that goes beyond a tutorial: it shows the design space, not just
-     one answer. See the step 1 game plan in `phase_1_agent.ipynb` for the
+     one answer. See step 3 in `phase-1-mvp/phase_1_research.md` for the
      model to follow.
    - **Done when:** how we'll know the step works.
 
    The sub-steps are then built one at a time, in the agreed order. If the
-   plan needs to change along the way, the game plan cell is updated first.
+   plan needs to change along the way, the research file and the notebook
+   summary are updated first.
 
 4. **Shadow, don't patch.** To change an imported function, define a new one
    with the same name in the notebook. Never reach into the module

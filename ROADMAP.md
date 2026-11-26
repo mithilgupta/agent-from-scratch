@@ -69,7 +69,7 @@ Folder: [`phase-1-mvp/`](phase-1-mvp/)
 |---|---|---|---|---|
 | 1 | Tool registry | Tools | Set this up before adding tools, so each new tool is a function, not a prompt rewrite | ✅ |
 | 2 | List and find files | Tools | The agent has to explore a project before it can change it | ✅ |
-| 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ⬜ |
+| 3 | Folder boundary | Safety | Keep file tools inside the project before any of them can write | ✅ |
 | 4 | Write and edit files | Tools | The moment the agent can actually change code | ⬜ |
 | 5 | Approval prompt | Safety | Ask before risky actions, needed before shell access | ⬜ |
 | 6 | Run shell commands | Tools | Lets the agent run code, tests and git | ⬜ |
@@ -255,7 +255,7 @@ reads as data, never as instructions.
 | Permission rules | Allow / ask / deny rules per tool and pattern | Later | ⬜ |
 | Permission modes | Switch between ask-everything, accept-edits, read-only and auto | Skip | ⬜ |
 | Automatic risk check | A model judges each action and blocks only risky ones | Later | ⬜ |
-| Folder boundary | File tools can't reach outside the project | Core | ⬜ |
+| Folder boundary | File tools can't reach outside the project | Core | ✅ |
 | Sandbox | Run commands where they can't touch the real machine (restricted shell, container, cloud) | Later | ⬜ |
 | Checkpoints | Snapshot files before each edit so they can be rolled back | Later | ⬜ |
 | Git safety net | Commit each change automatically; undo with one command | Skip | ⬜ |

@@ -87,7 +87,11 @@ Folder: [`phase-2-measure/`](phase-2-measure/)
 | 8 | Run log | Evaluation | Record every call and tool result so runs can be inspected | ⬜ |
 | 9 | Token and cost tracking | Evaluation | Know what each run costs before making it bigger | ⬜ |
 | 10 | Task benchmark | Evaluation | A small fixed set of tasks to score every later change against | ⬜ |
-| 11 | Same harness, different models | Model | First use of the benchmark: how much does the model matter? | ⬜ |
+| 11 | Same harness, different models | Model | First use of the benchmark: how much does the model matter? | Parked |
+
+**Parked (2026-11-26):** Phase 2 builds the three capabilities above (steps
+8–10); step 11 and these experiments use the benchmark, so they come after
+it, probably in a later phase. Plans: [`phase_2_research.md`](phase-2-measure/phase_2_research.md).
 
 **Experiments queued for the benchmark** (found while building earlier
 steps; run once step 10 exists):

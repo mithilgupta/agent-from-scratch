@@ -510,7 +510,7 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 
 ## Step 7: Verify loop
 
-*Draft, 2026-11-26. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+*Agreed 2026-11-26: decision A the prompt asks the model to verify (no forced check), decision B watch for test edits, don't guard.*
 
 ### 1. What we're doing and why
 
@@ -593,7 +593,7 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 | Evidence in the final answer | **Settled:** the instruction asks the model to say which test command it ran and what it showed, as Claude Code's docs advise. |
 | "Fixing" the test instead of the code | **Decision B** |
 
-**Decisions (for you):**
+**Decisions (agreed 2026-11-26, both as Claude leaned):**
 
 - **Decision A: ask the model to verify (prompt), or make the loop force it?** My lean: **the prompt, only.** It's what every industry agent does first, it's one added line in `build_system_prompt`, and it's the cleanest experiment for your "asked vs forced" question: we'll see whether the model actually follows the instruction. Forcing it (Aider-style) is the fallback if it doesn't, and a natural Phase 2 comparison.
 - **Decision B: guard against the agent editing the test instead of the code, or just watch for it?** My lean: **watch, don't guard.** A rule in the prompt ("never edit tests") would hide the very behaviour your fix-quality idea wants to study. Every edit already goes through your approval prompt, so you'd see a test edit before it happens, and the cell checks afterwards whether the test file changed.

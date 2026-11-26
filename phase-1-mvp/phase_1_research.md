@@ -379,7 +379,7 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 
 ## Step 6: Run shell commands
 
-*Draft, 2026-11-26. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+*Agreed 2026-11-26: decision A approve every command, decision B a fixed 30 s limit.*
 
 ### 1. What we're doing and why
 
@@ -470,7 +470,7 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 | Approval | **Settled:** the tool joins `RISKY_TOOLS`, so every command goes through the approval prompt from step 5 (subject to decision A). |
 | Can the model set the time limit? | **Decision B** |
 
-**Decisions (for you):**
+**Decisions (agreed 2026-11-26, both as Claude leaned):**
 
 - **Decision A: approve every command, or let "look-only" commands run without asking?** My lean: **every command.** Claude Code skips the prompt for a built-in list of read-only commands, but deciding what's read-only is harder than it looks: `cat notes.txt > app.py` starts with `cat` and overwrites a file. With every command shown to you, the boundary gap (a command can reach outside the project) is at least visible every time.
 - **Decision B: can the model choose a longer time limit for a command?** My lean: **no, a fixed 30 s.** Claude Code, opencode, OpenHands and Codex let the model pass a timeout, which matters for slow builds and installs. Our demo's tests take seconds, and one fixed limit is one less thing to get right.

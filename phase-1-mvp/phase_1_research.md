@@ -117,13 +117,13 @@ One sub-step, because there's one feature: the check. Running it against the mod
 
 | # | Sub-step | Based on |
 |---|---|---|
-| 3a | **Build the check, and test it.** One helper that tests a path, `inside_project(path)`, used by `read_file` (Phase 0's version plus the check) and `find_files` (section 2's version plus a filter that drops matches outside the folder). Test it without the model, through `run_tool` (the function the agent loop uses to call tools): a normal path, a `../` path, `/etc/hosts`, a `../*` search, and a symlink inside the project that points outside it. Then ask the agent for a file outside the project and record what the model does with the refusal: try another path, give up, or explain to the user (the finding about agent behavior; the choice of question is Claude's judgment). | Option C; learn-claude-code's `safe_path`; the "settled" rows above |
+| 3 | **Build the check, and test it.** One helper that tests a path, `inside_project(path)`, used by `read_file` (Phase 0's version plus the check) and `find_files` (section 2's version plus a filter that drops matches outside the folder). Test it without the model, through `run_tool` (the function the agent loop uses to call tools): a normal path, a `../` path, `/etc/hosts`, a `../*` search, and a symlink inside the project that points outside it. Then ask the agent for a file outside the project and record what the model does with the refusal: try another path, give up, or explain to the user (the finding about agent behavior; the choice of question is Claude's judgment). | Option C; learn-claude-code's `safe_path`; the "settled" rows above |
 
 ### 4. Coverage check: the breakdown against the sub-steps
 
 | Part of the problem | Live today? | Covered by |
 |---|---|---|
-| Reading, through our file tools | ✅ | **3a** builds the check into `read_file` and `find_files`, and tests it offline and with the model |
+| Reading, through our file tools | ✅ | **The build cell** builds the check into `read_file` and `find_files`, and tests it offline and with the model |
 | Writing, through our file tools | ❌ | **Deferred** to the file-edit step: the new tool calls the same `inside_project` check. Noted here so that step's plan includes it. |
 | Reading or writing, through terminal commands | ❌ | **Dropped from the boundary:** that needs an operating-system wall (option B), which is out of scope. Guarded instead by the user's yes/no before each command, in the approval-prompt step. A known limitation. |
 
@@ -239,19 +239,19 @@ Source code read on 2026-11-24 from local clones, links pinned to the commit rea
 
 | # | Sub-step | Based on |
 |---|---|---|
-| 4a | **Build `edit_file(filename, old_text, new_text)` and test it.** Registered like any other tool. Its description tells the model the old text must be copied exactly from the file and appear once. Test it without the model: a normal edit, text not found, text found twice, a path outside the folder. Then with the model: ask for a small change to a file in `sandbox/` and watch it read the file, then edit it; the cell puts the file back afterwards. | Option B; the "settled" rows above; ghuntley's uniqueness check; the folder check from step 3 |
+| 4 | **Build `edit_file(filename, old_text, new_text)` and test it.** Registered like any other tool. Its description tells the model the old text must be copied exactly from the file and appear once. Test it without the model: a normal edit, text not found, text found twice, a path outside the folder. Then with the model: ask for a small change to a file in `sandbox/` and watch it read the file, then edit it; the cell puts the file back afterwards. | Option B; the "settled" rows above; ghuntley's uniqueness check; the folder check from step 3 |
 
 ### 4. Coverage check: the breakdown against the sub-step
 
 | Part of the problem | Covered by |
 |---|---|
-| Change part of an existing file | **4a** |
+| Change part of an existing file | **The build cell** |
 | Create a new file | **Not now** (decision B); added when a later step needs it |
 | Rewrite a whole file | **Not built** (decision A); queued as a Phase 2 benchmark experiment against find-and-replace |
 | Delete or rename | **Dropped:** not needed for the Phase 1 goal |
-| Old text not in the file | **4a:** "not found" error with advice; forgiving matches dropped |
-| Old text appears more than once | **4a:** "found N times" error with advice |
-| Edit outside the project | **4a** calls `inside_project` |
+| Old text not in the file | **The build cell:** "not found" error with advice; forgiving matches dropped |
+| Old text appears more than once | **The build cell:** "found N times" error with advice |
+| Edit outside the project | **The build cell** calls `inside_project` |
 | A change you didn't want | **Deferred** to the approval prompt step. Until then, edits happen without asking, but only inside `sandbox/` |
 
 ### 5. Done when
@@ -270,7 +270,7 @@ Source code read on 2026-11-24 from local clones, links pinned to the commit rea
 
 **The goal in one sentence:** before the agent does anything that changes something, show you the action and wait for your yes or no. This is the "asks before anything risky" part of Phase 1's goal, and the roadmap puts it before terminal commands on purpose ([`ROADMAP.md:74`](../ROADMAP.md)): *"Ask before risky actions, needed before shell access."* Once the agent can run commands, a command can get around the folder check, so your yes or no becomes the only guard.
 
-Today nothing asks. In the agent loop (`ask()`, section 1f of the notebook), a tool call goes straight to `result = run_tool(name, args)`. The edit tool's live run (section 4a) showed it: the model asked for `edit_file`, and the file changed without anyone being asked.
+Today nothing asks. In the agent loop (`ask()`, section 1f of the notebook), a tool call goes straight to `result = run_tool(name, args)`. The edit tool's live run (step 4) showed it: the model asked for `edit_file`, and the file changed without anyone being asked.
 
 **The problem broken down (MECE).**
 
@@ -354,19 +354,19 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 
 | # | Sub-step | Based on |
 |---|---|---|
-| 5a | **Build the approval prompt and test it.** `RISKY_TOOLS`, an `approve(name, args)` function that shows the tool call and reads your answer with `input()`, and a new `ask()`: section 1f's version plus the check before `run_tool` (changed lines marked). Then run the edit request from section 4a twice, and **you answer the prompt** in the notebook: once yes (the file changes), once with a reason (the file stays the same, and we see what the model does with your reason). A read along the way must not ask. | learn-claude-code's "one line in the loop"; mini-swe-agent's prompt; the "settled" rows above |
+| 5 | **Build the approval prompt and test it.** `RISKY_TOOLS`, an `approve(name, args)` function that shows the tool call and reads your answer with `input()`, and a new `ask()`: section 1f's version plus the check before `run_tool` (changed lines marked). Then run the edit request from step 4 twice, and **you answer the prompt** in the notebook: once yes (the file changes), once with a reason (the file stays the same, and we see what the model does with your reason). A read along the way must not ask. | learn-claude-code's "one line in the loop"; mini-swe-agent's prompt; the "settled" rows above |
 
-**No as-is cell:** the "before" is already in the notebook. Section 4a's live run shows the model editing without being asked, and section 1f has the `ask()` being changed. (Claude's judgment, to keep the cell count down.)
+**No as-is cell:** the "before" is already in the notebook. The edit tool's live run (step 4) shows the model editing without being asked, and section 1f has the `ask()` being changed. (Claude's judgment, to keep the cell count down.)
 
 ### 4. Coverage check: the breakdown against the sub-step
 
 | Part of the problem | Covered by |
 |---|---|
-| Tools that only look | **5a:** not in `RISKY_TOOLS`, so never asked; checked during the test |
-| Tools that change files | **5a:** `edit_file` is asked about |
+| Tools that only look | **The build cell:** not in `RISKY_TOOLS`, so never asked; checked during the test |
+| Tools that change files | **The build cell:** `edit_file` is asked about |
 | Tools that run commands | **Deferred** to the terminal-command step: its tool joins `RISKY_TOOLS` |
-| Your "yes" | **5a:** the tool runs |
-| Your "no" | **5a:** the tool doesn't run; the model gets a refusal with your reason |
+| Your "yes" | **The build cell:** the tool runs |
+| Your "no" | **The build cell:** the tool doesn't run; the model gets a refusal with your reason |
 | Session-wide yes, modes, rules, model-rated risk | **Dropped** for Phase 1 (see the filter); model-rated risk noted for later |
 
 ### 5. Done when
@@ -479,19 +479,19 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 
 | # | Sub-step | Based on |
 |---|---|---|
-| 6a | **Build `run_command(command)` and test it.** Runs the command in `sandbox/` with a 30 s limit and the notebook's Python first on the `PATH`, returns the exit code and the combined output (start and end kept past 10,000 characters), registered and added to `RISKY_TOOLS`. Test it without the model: a command that works, one that fails (non-zero exit code), and one that runs too long. Then with the model, answering the approval prompts yourself: **(1)** put a tiny failing test in `sandbox/` and ask the agent to run the tests and say what fails; **(2)** ask it to show `../ROADMAP.md` with `cat`, and watch the approval prompt show a command that goes outside the project, which the folder check can't stop. | Option A; mini-swe-agent's limits and result; learn-claude-code's `subprocess.run`; the approval prompt from step 5 |
+| 6 | **Build `run_command(command)` and test it.** Runs the command in `sandbox/` with a 30 s limit and the notebook's Python first on the `PATH`, returns the exit code and the combined output (start and end kept past 10,000 characters), registered and added to `RISKY_TOOLS`. Test it without the model: a command that works, one that fails (non-zero exit code), and one that runs too long. Then with the model, answering the approval prompts yourself: **(1)** put a tiny failing test in `sandbox/` and ask the agent to run the tests and say what fails; **(2)** ask it to show `../ROADMAP.md` with `cat`, and watch the approval prompt show a command that goes outside the project, which the folder check can't stop. | Option A; mini-swe-agent's limits and result; learn-claude-code's `subprocess.run`; the approval prompt from step 5 |
 
 ### 4. Coverage check: the breakdown against the sub-step
 
 | Part of the problem | Covered by |
 |---|---|
-| Commands that look, run code, or change files | **6a:** the tool runs them, each after your yes |
-| Commands that reach outside the project | **Not prevented** (a known limitation without an OS sandbox); **6a** makes it visible in test (2), and your yes or no is the guard |
-| Where it runs | **6a:** `sandbox/` |
-| How long | **6a:** 30 s fixed limit |
-| What comes back | **6a:** exit code plus combined output |
-| How much | **6a:** start and end past 10,000 characters |
-| Whether it may run | **6a:** joins `RISKY_TOOLS` (decision A) |
+| Commands that look, run code, or change files | **The build cell:** the tool runs them, each after your yes |
+| Commands that reach outside the project | **Not prevented** (a known limitation without an OS sandbox); **The build cell** makes it visible in test (2), and your yes or no is the guard |
+| Where it runs | **The build cell:** `sandbox/` |
+| How long | **The build cell:** 30 s fixed limit |
+| What comes back | **The build cell:** exit code plus combined output |
+| How much | **The build cell:** start and end past 10,000 characters |
+| Whether it may run | **The build cell:** joins `RISKY_TOOLS`; every command asks |
 
 ### 5. Done when
 

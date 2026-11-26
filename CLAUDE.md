@@ -32,8 +32,16 @@ Read [WORKFLOW.md](WORKFLOW.md) before building anything. In short:
     per step. The user reviews and agrees it there.
   - **The notebook** gets one short markdown cell at the top of the step's
     section (~15–20 lines): goal, breakdown in a sentence or two, what was
-    chosen and dropped, decisions if still open, done when, and a link to
-    the research section. Nothing else.
+    chosen and dropped, decisions, **a numbered "Steps" list** (what the
+    cells below build, how they're tested without and with the model, and
+    what the user does or answers while running them), done when, and a
+    link to the research section. The Steps list is required (explicit
+    instruction, 2026-11-26: "you gave me EVERYTHING BUT THE ACTUAL
+    BREAKDOWN OF STEPS").
+  - **Number cells by step, with a letter only when a step has several
+    sub-steps** (2026-11-26): `# 6. The shell tool: ...`, not `# 6a.`, when
+    step 6 has one sub-step. Titles and comments state decisions, never
+    "(decision A in the plan)".
   - **Scale the research to the step:** a step that adds one small function
     gets a lighter plan than a big design choice. The real-agents table
     stays every time; a small step can skip the "by question" table and

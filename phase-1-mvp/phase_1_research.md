@@ -374,3 +374,127 @@ Source code read on 2026-11-26 from local clones, links pinned to the commit rea
 - An edit stops and shows you the tool call; your yes applies it.
 - Typing a reason refuses it: the file is unchanged, and the model receives your reason.
 - Reading a file never prompts.
+
+---
+
+## Step 6: Run shell commands
+
+*Draft, 2026-11-26. Not agreed yet: no code until the two decisions in section 3 of this plan are settled.*
+
+### 1. What we're doing and why
+
+**The goal in one sentence:** let the agent run a terminal command, such as `pytest`, and see its output. That serves two parts of Phase 1's goal: **seeing the failure** (a coding agent usually finds a bug by running the failing test and reading the error) and **"runs the tests to confirm the fix."** The roadmap ([`ROADMAP.md:75`](../ROADMAP.md)): *"Lets the agent run code, tests and git."*
+
+Today the agent can find, read and edit files (each edit approved by you), but it can't run anything, so it can't see a test fail or pass.
+
+**The problem broken down (MECE).**
+
+*By what a command can do:*
+
+| A command can... | Example | Limited by our code? |
+|---|---|---|
+| **Look** | `ls`, `cat`, `grep`, `git status` | No |
+| **Run code** | `pytest`, `python script.py`, which can then do anything the code does | No |
+| **Change files** | `sed -i`, `rm`, `git commit` | No |
+| **Reach outside the project** | `cat ../ROADMAP.md`, network access | **No: it gets around the folder check from step 3** |
+
+In short, a command can do anything your user account can. The only guard is the approval prompt from step 5: you see each command and say yes or no. That's a known limitation, not something to fix here; containers and OS sandboxes are out of scope for this project.
+
+*By what the tool itself must handle:*
+
+| Concern | The question |
+|---|---|
+| **Where** it runs | In which folder? |
+| **How long** it may run | What stops a command that hangs, or waits for input forever? |
+| **What comes back** | The output, the errors, and whether it succeeded (the exit code) |
+| **How much** comes back | What if a command prints thousands of lines? |
+| **Whether it may run at all** | The approval prompt (already built) |
+
+### 2. Evidence: how real agents do it
+
+Source code read on 2026-11-26 from local clones, links pinned to the commit read. **This is a snapshot:** these repos change daily.
+
+**By question:**
+
+| Question | What real agents do |
+|---|---|
+| A fresh process per command, or one long-lived terminal? | **Fresh process each time:** learn-claude-code, ghuntley, mini-swe-agent (*"Every action is executed in a new subshell"*), Claude Code (*"runs each command in a separate process"*; only `cd` carries over). **A long-lived terminal** that keeps `cd` and variables: OpenHands (a tmux session), Codex (optional sessions it can type into later). |
+| What stops a hanging command? | **A fixed time limit:** learn-claude-code 120 s, mini-swe-agent 30 s, opencode 2 min, Claude Code 2 min (the model can ask for up to 10), Codex 10 s by default. **A limit on silence instead:** Gemini CLI stops a command after 5 minutes with no new output; OpenHands pauses after 30 s with no new output and lets the model wait longer or press Ctrl+C. |
+| What comes back? | **Output and errors combined:** learn-claude-code, ghuntley, mini-swe-agent. **Plus the exit code** (0 means success): mini-swe-agent, Gemini CLI (*"Exit Code: N"*), Codex (*"Exit code"*, plus *"Wall time"*), OpenHands, opencode. |
+| What if the output is huge? | **Cut it at a limit:** learn-claude-code (50,000 characters). **Keep the start and the end:** mini-swe-agent (over 10,000 characters, with a warning to use `head` or `tail`), Codex, Claude Code (for failed commands). **Save the full output to a file and show a preview:** opencode, OpenHands (over 30,000 characters), Claude Code. Gemini CLI can also have a second model summarize it. |
+| Where does it run? | **In the project folder,** everywhere. Gemini CLI and opencode also check a requested working folder against the workspace. |
+| Who approves commands? | **You, by default,** in mini-swe-agent (confirm mode), Aider, Claude Code (except a built-in list of read-only commands), Codex (depending on its policy). learn-claude-code blocks a short deny list (`sudo`, `rm -rf /`, ...). Codex and Gemini CLI also run commands inside an OS sandbox. |
+
+**One agent at a time:**
+
+| Tier | Agent | Shell tool | Source |
+|---|---|---|---|
+| Small scale | **learn-claude-code** | `bash(command)`: `subprocess.run(shell=True, cwd=WORKDIR, timeout=120)`, output and errors joined and cut at 50,000 characters; a short deny list (`sudo`, `rm -rf /`, ...) is checked first. | [`s02_tool_use/code.py:63-75`](https://github.com/shareAI-lab/learn-claude-code/blob/7226f555d48900076eba126acf37c9ed5f002b5d/s02_tool_use/code.py#L63-L75) |
+| Small scale | **ghuntley** | `bash`: `exec.Command("bash", "-c", ...)` with combined output; **no time limit, no size limit.** | [`bash_tool.go:372-389`](https://github.com/ghuntley/how-to-build-a-coding-agent/blob/fa3dd49fdddf45e92b35c66746e6bb6aac6ac27e/bash_tool.go#L372-L389) |
+| Small scale | **mini-swe-agent** | Its only tool. A new subshell per command, 30 s default time limit (it kills the whole process group), output with errors plus `returncode`; over 10,000 characters the model sees the head and tail with a warning. | [`environments/local.py:16, 24-29, 72-90`](https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/environments/local.py#L72-L90); [`config/default.yaml:39-40, 118-140`](https://github.com/SWE-agent/mini-swe-agent/blob/04d809ceab9df28f9adaed044884180159172930/src/minisweagent/config/default.yaml#L118-L140) |
+| Industry | **Gemini CLI** | `run_shell_command`, with an optional working folder (checked against the workspace) and background mode. Stops after **5 minutes without output** (the timer resets on each new output). The model sees `Output: ...`, `Error: ...` and `Exit Code: N`; long output can be summarized by another model call. | [`shell.ts:702-709, 773-796, 1030-1044, 1239-1255`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/tools/shell.ts#L1030-L1044); [`config.ts:1321-1322`](https://github.com/google-gemini/gemini-cli/blob/b9776560ea5710bc673891499aaec68c737d160a/packages/core/src/config/config.ts#L1321-L1322) |
+| Industry | **Codex CLI** | Default time limit **10 s** (the model can pass its own). Result: `Exit code`, `Wall time`, `Total output lines` when cut, then `Output`. Also a tool that runs a command in a terminal session and returns a session ID, so the model can type into it later. Commands run inside its OS sandbox. | [`exec.rs:62`](https://github.com/openai/codex/blob/818bde09950cab06c18808f540037aa8e5d616a5/codex-rs/core/src/exec.rs#L62); [`tools/mod.rs:95-117`](https://github.com/openai/codex/blob/818bde09950cab06c18808f540037aa8e5d616a5/codex-rs/core/src/tools/mod.rs#L95-L117); [`shell_spec.rs:92-96, 141`](https://github.com/openai/codex/blob/818bde09950cab06c18808f540037aa8e5d616a5/codex-rs/core/src/tools/handlers/shell_spec.rs#L92-L96) |
+| Industry | **opencode** | `shell(command, workdir, timeout, background)`. Default **2 min** for foreground commands; on timeout: *"Retry with a larger timeout if the command is expected to take longer."* Large output is saved to a file with a preview. The working folder goes through the same folder check as file tools. | [`shell.ts:22, 40-56, 120-148, 195-224`](https://github.com/anomalyco/opencode/blob/a5518690fc5cfd57ea2abfb636ef03a9ce67fc51/packages/core/src/tool/plugin/shell.ts#L195-L224) |
+| Industry | **OpenHands** | *"Run shell commands in a persistent terminal session"* (tmux). With no time limit set, it pauses after **30 s of no new output**: exit code `-1` means still running, and the model can send Ctrl+C or keep waiting. Output over 30,000 characters is cut and the full text saved to a file. | [`definition.py:1, 89-113, 150-156, 186-199`](https://github.com/OpenHands/software-agent-sdk/blob/84ae396c3cfc3ecb35d7388547f10167b477771d/openhands-tools/openhands/tools/terminal/definition.py#L89-L113); [`constants.py:18, 31`](https://github.com/OpenHands/software-agent-sdk/blob/84ae396c3cfc3ecb35d7388547f10167b477771d/openhands-tools/openhands/tools/terminal/constants.py#L18-L31) |
+| Industry | **Aider** | **No shell tool for the model:** the model *suggests* commands in its reply; you confirm (*"Run shell command?"*, explicit yes required), Aider runs them in the repo, then asks *"Add command output to the chat?"* So you decide what the model gets to see. | [`base_coder.py:2450-2492`](https://github.com/Aider-AI/aider/blob/5dc9490bb35f9729ef2c95d00a19ccd30c26339c/aider/coders/base_coder.py#L2450-L2492) |
+| Closed (docs) | **Claude Code** | Bash: *"runs each command in a separate process"*; `cd` carries over only inside the project; variables don't. Default time limit 2 min, up to 10 when the model asks. Output inline up to about 30,000 characters, beyond that saved to a file with a preview; failed commands get a head-and-tail excerpt. Approval required, except a built-in set of read-only commands. | [Tools reference, "Bash tool behavior"](https://code.claude.com/docs/en/tools); [permissions](https://code.claude.com/docs/en/permissions) (public docs, read 2026-11-26) |
+
+**What they agree on → what we follow:** run in the project folder; return the output **with errors and the exit code**; stop runaway commands with a time limit; keep huge output from flooding the model.
+
+**Where they differ:** a fresh process vs a long-lived terminal, a total time limit vs a silence limit, how huge output is handled, whether the model can set its own time limit, and whether every command needs approval.
+
+**Cross-check with a survey.** The *Harness Engineering* survey ([Barbaste et al., July 2026](https://arxiv.org/abs/2609.00006)), Recommendation 3 (p.68): *"Begin with just a bash tool."* We added it last on purpose, after the approval prompt, because a shell gets around every check in our own tool code.
+
+### 3. Sub-steps and decisions, derived top-down
+
+**The options, by how the agent gets to run commands:**
+
+| Option | Who | Fits us? |
+|---|---|---|
+| **A. A tool that runs one command in a fresh process** | learn-claude-code, ghuntley, mini-swe-agent, Claude Code | ✅ The simplest |
+| **B. A long-lived terminal session** (keeps `cd`, variables; can type into running programs) | OpenHands, Codex (optionally) | **Dropped:** a session manager is real complexity; the demo only runs `pytest`. |
+| **C. The model suggests commands, you run them and decide whether it sees the output** | Aider | **Dropped:** the Phase 1 goal needs the agent to run the tests itself. |
+
+**Within option A:**
+
+| Choice | Result |
+|---|---|
+| Where it runs | **Settled:** in `sandbox/` (the folder the other tools use). |
+| What comes back | **Settled:** the exit code plus output and errors combined, like mini-swe-agent. |
+| A time limit | **Settled:** a fixed limit of 30 s, like mini-swe-agent; a timeout returns an error saying so. A silence-based limit (Gemini CLI, OpenHands) is dropped as more complex. |
+| Huge output | **Settled, Claude's judgment:** cut at 10,000 characters, keeping the start and the end, like mini-swe-agent. Saving the full output to a file is dropped: the roadmap lists "large output handling" for later. |
+| Background commands, typing into running programs | **Dropped:** the demo runs short commands. A command waiting for input is stopped by the time limit. |
+| Which Python and pytest a command finds | **Settled, Claude's judgment:** commands run with the notebook's own Python first on the `PATH`. A check on 2026-11-26 found that a shell started from here picks Anaconda's base Python, and `python3` is the system 3.9, so tests could run in the wrong environment. |
+| A deny list (`sudo`, `rm -rf /`) | **Dropped:** easy to get around (e.g. via another program), and every command already waits for your yes. The roadmap lists permission rules for later. |
+| An OS sandbox | **Dropped:** out of scope for this project. |
+| Approval | **Settled:** the tool joins `RISKY_TOOLS`, so every command goes through the approval prompt from step 5 (subject to decision A). |
+| Can the model set the time limit? | **Decision B** |
+
+**Decisions (for you):**
+
+- **Decision A: approve every command, or let "look-only" commands run without asking?** My lean: **every command.** Claude Code skips the prompt for a built-in list of read-only commands, but deciding what's read-only is harder than it looks: `cat notes.txt > app.py` starts with `cat` and overwrites a file. With every command shown to you, the boundary gap (a command can reach outside the project) is at least visible every time.
+- **Decision B: can the model choose a longer time limit for a command?** My lean: **no, a fixed 30 s.** Claude Code, opencode, OpenHands and Codex let the model pass a timeout, which matters for slow builds and installs. Our demo's tests take seconds, and one fixed limit is one less thing to get right.
+
+**Sub-step** (one feature, so one sub-step; a brand-new tool, so no as-is cell):
+
+| # | Sub-step | Based on |
+|---|---|---|
+| 6a | **Build `run_command(command)` and test it.** Runs the command in `sandbox/` with a 30 s limit and the notebook's Python first on the `PATH`, returns the exit code and the combined output (start and end kept past 10,000 characters), registered and added to `RISKY_TOOLS`. Test it without the model: a command that works, one that fails (non-zero exit code), and one that runs too long. Then with the model, answering the approval prompts yourself: **(1)** put a tiny failing test in `sandbox/` and ask the agent to run the tests and say what fails; **(2)** ask it to show `../ROADMAP.md` with `cat`, and watch the approval prompt show a command that goes outside the project, which the folder check can't stop. | Option A; mini-swe-agent's limits and result; learn-claude-code's `subprocess.run`; the approval prompt from step 5 |
+
+### 4. Coverage check: the breakdown against the sub-step
+
+| Part of the problem | Covered by |
+|---|---|
+| Commands that look, run code, or change files | **6a:** the tool runs them, each after your yes |
+| Commands that reach outside the project | **Not prevented** (a known limitation without an OS sandbox); **6a** makes it visible in test (2), and your yes or no is the guard |
+| Where it runs | **6a:** `sandbox/` |
+| How long | **6a:** 30 s fixed limit |
+| What comes back | **6a:** exit code plus combined output |
+| How much | **6a:** start and end past 10,000 characters |
+| Whether it may run | **6a:** joins `RISKY_TOOLS` (decision A) |
+
+### 5. Done when
+
+- After your yes, the agent runs `pytest` in `sandbox/`, sees the failing test, and says what fails.
+- A failing command returns its non-zero exit code and output; a command over 30 s is stopped with an error saying so.
+- Every command waits for your yes, including one that reaches outside the project, which the folder check doesn't stop.
